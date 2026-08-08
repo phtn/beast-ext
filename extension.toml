@@ -11,4 +11,4 @@ schema_version = 1
 
 [grammars.beast]
 repository = "file:///Users/xpriori/Code/beast.ext"
-rev = "aed9abb4bb9f4e94e0daf2d5f77e8caf5bdc2ba2"
+rev = "b8a900bfd28922d6fc333f57d85ea3ce9d9f7146"
