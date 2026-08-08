@@ -3,3 +3,4 @@ src/parser.c
 src/grammar.json
 src/node-types.json
 /tmp/
+grammars/beast/
