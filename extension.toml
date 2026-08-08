@@ -11,4 +11,4 @@ schema_version = 1
 
 [grammars.beast]
 repository = "https://github.com/phtn/beast-ext"
-rev = "a160d4bf543059ec91408ab858e6adc79938bfdc"
+rev = "69c4f50eb814f6f171cbd64af0bb3750b4d2354c"
