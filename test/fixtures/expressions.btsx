@@ -1,0 +1,10 @@
+button(title="say \"hi\"" data-id="row-1" aria-label='Row') Click
+p Object #{format({ nested: { ok: true }, text: "}" })}
+p Template #{`hello ${name} }`}
+p Comment #{value /* } is not a delimiter */ + 1}
+p Regex #{/}/.test(value)}
+p Regex class #{/[}]/.test(value)}
+p Return regex #{(() => { return /}/.test(value) })()}
+p Division #{value / fn({ x: 1 }) / divisor}
+p Nested template #{`outer ${`inner ${value}`}`}
+div(onClick={() => {}} empty={{}}) Empty braces

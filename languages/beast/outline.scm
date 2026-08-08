@@ -12,4 +12,5 @@
 (elseif_clause
   condition: (line_expression) @name) @item
 
-(else_clause) @item
+(else_clause
+  "else" @name) @item

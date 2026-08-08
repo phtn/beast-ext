@@ -1,0 +1,258 @@
+================================================================================
+Nested elements and control flow
+================================================================================
+
+.card
+  .header
+    h1 Welcome, #{user.name}
+  .body
+    if user.isAdmin
+      AdminPanel(userId={user.id})
+    elseif user.isGuest
+      | Guest account
+    else
+      each message, i in messages
+        li.message(key={message.id}) #{message.text}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (element
+    (selector
+      (class_selector
+        (css_name)))
+    (block
+      (element
+        (selector
+          (class_selector
+            (css_name)))
+        (block
+          (element
+            (selector
+              (identifier))
+            (text_content
+              (text_fragment)
+              (interpolation
+                (expression_body))))))
+      (element
+        (selector
+          (class_selector
+            (css_name)))
+        (block
+          (if_statement
+            (if_clause
+              (line_expression)
+              (block
+                (element
+                  (selector
+                    (identifier))
+                  (attributes
+                    (attribute
+                      (attribute_name)
+                      (expression
+                        (expression_body)))))))
+            (elseif_clause
+              (line_expression)
+              (block
+                (text_line
+                  (text_content
+                    (text_fragment)))))
+            (else_clause
+              (block
+                (each_statement
+                  (identifier)
+                  (identifier)
+                  (line_expression)
+                  (block
+                    (element
+                      (selector
+                        (identifier)
+                        (class_selector
+                          (css_name)))
+                      (attributes
+                        (attribute
+                          (attribute_name)
+                          (expression
+                            (expression_body))))
+                      (text_content
+                        (interpolation
+                          (expression_body))))))))))))))
+
+================================================================================
+Comments and blank lines
+================================================================================
+
+// before
+main
+
+  // inside
+  span After comment
+
+// after
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (comment)
+  (element
+    (selector
+      (identifier))
+    (block
+      (comment)
+      (element
+        (selector
+          (identifier))
+        (text_content
+          (text_fragment)))))
+  (comment))
+
+================================================================================
+Attributes and balanced expressions
+================================================================================
+
+button(title="say \"hi\"" data-id="row-1" aria-label='Row') Click
+p Object #{format({ nested: { ok: true }, text: "}" })}
+p Template #{`hello ${name} }`}
+p Comment #{value /* } is not a delimiter */ + 1}
+p Regex #{/}/.test(value)}
+p Return regex #{(() => { return /}/.test(value) })()}
+p Division #{value / fn({ x: 1 }) / divisor}
+div(onClick={() => {}} empty={{}}) Empty braces
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (element
+    (selector
+      (identifier))
+    (attributes
+      (attribute
+        (attribute_name)
+        (string
+          (escape_sequence)
+          (escape_sequence)))
+      (attribute
+        (attribute_name)
+        (string))
+      (attribute
+        (attribute_name)
+        (string)))
+    (text_content
+      (text_fragment)))
+  (element
+    (selector
+      (identifier))
+    (text_content
+      (text_fragment)
+      (interpolation
+        (expression_body))))
+  (element
+    (selector
+      (identifier))
+    (text_content
+      (text_fragment)
+      (interpolation
+        (expression_body))))
+  (element
+    (selector
+      (identifier))
+    (text_content
+      (text_fragment)
+      (interpolation
+        (expression_body))))
+  (element
+    (selector
+      (identifier))
+    (text_content
+      (text_fragment)
+      (interpolation
+        (expression_body))))
+  (element
+    (selector
+      (identifier))
+    (text_content
+      (text_fragment)
+      (interpolation
+        (expression_body))))
+  (element
+    (selector
+      (identifier))
+    (text_content
+      (text_fragment)
+      (interpolation
+        (expression_body))))
+  (element
+    (selector
+      (identifier))
+    (attributes
+      (attribute
+        (attribute_name)
+        (expression
+          (expression_body)))
+      (attribute
+        (attribute_name)
+        (expression
+          (expression_body))))
+    (text_content
+      (text_fragment))))
+
+================================================================================
+Selectors and explicit text
+================================================================================
+
+App#root.shell(enabled)
+  #content.main-pane
+    | Plain text #{value}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (element
+    (selector
+      (identifier)
+      (id_selector
+        (css_name))
+      (class_selector
+        (css_name)))
+    (attributes
+      (attribute
+        (attribute_name)))
+    (block
+      (element
+        (selector
+          (id_selector
+            (css_name))
+          (class_selector
+            (css_name)))
+        (block
+          (text_line
+            (text_content
+              (text_fragment)
+              (interpolation
+                (expression_body)))))))))
+
+================================================================================
+Tab indentation
+================================================================================
+
+main
+	span Tab-indented child
+aside Sibling
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (element
+    (selector
+      (identifier))
+    (block
+      (element
+        (selector
+          (identifier))
+        (text_content
+          (text_fragment)))))
+  (element
+    (selector
+      (identifier))
+    (text_content
+      (text_fragment))))

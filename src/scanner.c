@@ -1,11 +1,12 @@
 #include "tree_sitter/parser.h"
-#include <assert.h>
+#include <stdbool.h>
+#include <stdint.h>
+#include <stdlib.h>
 #include <string.h>
-#include <wchar.h>
-#include <stdio.h>
 
 // Beast external scanner: indentation-sensitive, Python/YAML-style.
-// Manages _newline / _indent / _dedent tokens declared in grammar.js.
+// Manages indentation tokens and embedded JS/TS expression boundaries declared
+// in grammar.js.
 // Extras in grammar = /[ \t]/ (spaces/tabs are skipped). Newlines and
 // indentation are *not* extras — we emit them here.
 //
@@ -15,16 +16,18 @@ enum TokenType {
   INDENT,
   DEDENT,
   ERROR_SENTINEL,
+  EXPRESSION_CONTENT,
 };
 
 #define MAX_INDENTS 64
+#define TAB_WIDTH 2
 
 typedef struct {
   int16_t indents[MAX_INDENTS];
   uint16_t len;
 } Scanner;
 
-void *tree_sitter_beast_external_scanner_create() {
+void *tree_sitter_beast_external_scanner_create(void) {
   Scanner *scanner = (Scanner *)calloc(1, sizeof(Scanner));
   return scanner;
 }
@@ -33,7 +36,8 @@ void tree_sitter_beast_external_scanner_destroy(void *payload) {
   free(payload);
 }
 
-unsigned tree_sitter_beast_external_scanner_serialize(void *payload, char *buffer) {
+unsigned tree_sitter_beast_external_scanner_serialize(void *payload,
+                                                      char *buffer) {
   Scanner *scanner = (Scanner *)payload;
   size_t size = 0;
   buffer[size++] = (char)scanner->len;
@@ -45,213 +49,324 @@ unsigned tree_sitter_beast_external_scanner_serialize(void *payload, char *buffe
   return size;
 }
 
-void tree_sitter_beast_external_scanner_deserialize(void *payload, const char *buffer, unsigned length) {
+void tree_sitter_beast_external_scanner_deserialize(void *payload,
+                                                    const char *buffer,
+                                                    unsigned length) {
   Scanner *scanner = (Scanner *)payload;
-  scanner->len = 0;
-  if (length == 0) return;
+  scanner->len = 1;
+  scanner->indents[0] = 0;
+  if (length == 0)
+    return;
   size_t size = 0;
-  scanner->len = (uint8_t)buffer[size++];
-  if (scanner->len > MAX_INDENTS) scanner->len = MAX_INDENTS;
-  for (uint16_t i = 0; i < scanner->len && size + 1 < length; i++) {
+  uint16_t serialized_len = (uint8_t)buffer[size++];
+  if (serialized_len > MAX_INDENTS)
+    serialized_len = MAX_INDENTS;
+  scanner->len = 0;
+  for (uint16_t i = 0; i < serialized_len && size + 1 < length; i++) {
     int16_t hi = (int16_t)((uint8_t)buffer[size++]);
     int16_t lo = (int16_t)((uint8_t)buffer[size++]);
-    scanner->indents[i] = (int16_t)((hi << 8) | lo);
+    scanner->indents[scanner->len++] = (int16_t)((hi << 8) | lo);
   }
-  if (scanner->len > 0 && scanner->indents[0] != 0) {
-    // ensure base 0 stays at bottom if deserialized incorrectly
+  if (scanner->len == 0 || scanner->indents[0] != 0) {
+    scanner->len = 1;
+    scanner->indents[0] = 0;
   }
 }
 
-static void advance(TSLexer *lexer) { lexer->advance(lexer, false); }
 static void skip(TSLexer *lexer) { lexer->advance(lexer, true); }
+static void advance(TSLexer *lexer) { lexer->advance(lexer, false); }
 
-// Helper: column uses spaces only width currently (tabs count as 8 to be safe)
-// Grammar extras skip [ \t], so this matches parser's view.
-// We count indent level as raw column (number of leading spaces/tabs after newline).
-static bool scan(TSLexer *lexer, const bool *valid_symbols, Scanner *scanner) {
-  bool has_newline = false;
-  // Bookkeeping: indent after newline handling
-  // 1) consume any newlines + leading whitespace, tracking last newline's indent column
-  // 2) decide what token to emit based on indent change
+typedef enum {
+  JS_NORMAL,
+  JS_SINGLE_QUOTE,
+  JS_DOUBLE_QUOTE,
+  JS_TEMPLATE,
+  JS_LINE_COMMENT,
+  JS_BLOCK_COMMENT,
+  JS_REGEX,
+  JS_REGEX_CHARACTER_CLASS,
+} JsMode;
 
-  // If we're at EOF, emit pending dedents
-  if (lexer->eof(lexer)) {
-    if (valid_symbols[DEDENT] && scanner->len > 0) {
-      // Pop one dedent per scan call (tree-sitter calls repeatedly)
-      // Leave one level (0) on stack.
-      if (scanner->len > 1) {
-        scanner->len--;
-        lexer->result_symbol = DEDENT;
-        return true;
-      }
-    }
+static bool is_identifier_start(int32_t c) {
+  return c == '_' || c == '$' || (c >= 'A' && c <= 'Z') ||
+         (c >= 'a' && c <= 'z');
+}
+
+static bool is_identifier_continue(int32_t c) {
+  return is_identifier_start(c) || (c >= '0' && c <= '9');
+}
+
+static bool keyword_allows_regex(const char *word) {
+  static const char *const keywords[] = {
+      "await", "case",   "delete", "in",     "instanceof", "new",
+      "of",    "return", "throw",  "typeof", "void",       "yield",
+  };
+  for (size_t i = 0; i < sizeof(keywords) / sizeof(keywords[0]); i++) {
+    if (strcmp(word, keywords[i]) == 0)
+      return true;
+  }
+  return false;
+}
+
+static bool scan_expression_content(TSLexer *lexer) {
+  if (lexer->lookahead == '}' || lexer->eof(lexer))
     return false;
-  }
 
-  // Skip nothing except we need to see newlines. The extras handling in grammar
-  // already skips spaces/tabs *within* a line, but newlines are NOT extras.
-  // However lexer may be in middle of line — we only act when we see newline.
+  JsMode mode = JS_NORMAL;
+  int32_t brace_depth = 0;
+  int32_t template_depths[MAX_INDENTS];
+  uint16_t template_depth_count = 0;
+  bool can_start_regex = true;
 
-  // Consume whitespace that precedes a newline? Actually tree-sitter calls scanner
-  // only when one of our external tokens is valid. We should check for newline.
+  while (!lexer->eof(lexer)) {
+    int32_t c = lexer->lookahead;
 
-  // First, look ahead: if next char is '\n' or '\r', we have a newline boundary.
-  // We also handle \r\n.
-
-  // Peek if we're at a newline
-  bool at_newline = false;
-  if (lexer->lookahead == '\n' || lexer->lookahead == '\r') {
-    at_newline = true;
-  }
-
-  if (at_newline) {
-    // Consume one run of newlines (handles blank lines)
-    // For blank lines we do NOT emit indent/dedent — just consume them.
-    int32_t indent = -1;
-    bool found_content = false;
-
-    while (true) {
-      has_newline = true;
-      // consume \r and \n
-      if (lexer->lookahead == '\r') {
+    if (mode == JS_SINGLE_QUOTE || mode == JS_DOUBLE_QUOTE) {
+      int32_t quote = mode == JS_SINGLE_QUOTE ? '\'' : '"';
+      if (c == '\\') {
         advance(lexer);
-        if (lexer->lookahead == '\n') advance(lexer);
-      } else if (lexer->lookahead == '\n') {
-        advance(lexer);
+        if (!lexer->eof(lexer))
+          advance(lexer);
       } else {
-        break;
+        advance(lexer);
+        if (c == quote) {
+          mode = JS_NORMAL;
+          can_start_regex = false;
+        }
       }
+      continue;
+    }
 
-      // After newline, count indentation (spaces/tabs)
-      int32_t column = 0;
-      while (lexer->lookahead == ' ' || lexer->lookahead == '\t') {
-        if (lexer->lookahead == '\t') column += 8 - (column % 8);
-        else column++;
+    if (mode == JS_TEMPLATE) {
+      if (c == '\\') {
+        advance(lexer);
+        if (!lexer->eof(lexer))
+          advance(lexer);
+      } else if (c == '`') {
+        advance(lexer);
+        mode = JS_NORMAL;
+        can_start_regex = false;
+      } else if (c == '$') {
+        advance(lexer);
+        if (lexer->lookahead == '{') {
+          advance(lexer);
+          if (template_depth_count < MAX_INDENTS) {
+            template_depths[template_depth_count++] = brace_depth;
+          }
+          brace_depth++;
+          mode = JS_NORMAL;
+          can_start_regex = true;
+        }
+      } else {
         advance(lexer);
       }
-
-      // Handle comments-style blank? Beast has `// comment` — but that is a
-      // grammar token, not whitespace. So blank line detection:
-      // if next char is newline again -> blank line, continue loop
-      if (lexer->lookahead == '\n' || lexer->lookahead == '\r') {
-        // blank line — no indent change
-        continue;
-      }
-      if (lexer->eof(lexer)) {
-        // EOF after newline + indent — emit dedents first, then EOF
-        indent = column;
-        found_content = false;
-        break;
-      }
-      // If line is `//` comment? Actually comment is a statement starting with //
-      // We should NOT skip it — the comment token will consume `//...` itself.
-      // But blank-line logic already handled pure whitespace lines. For comment
-      // lines, we still need to emit indent logic based on their column.
-      // So treat comment line as real content.
-      indent = column;
-      found_content = true;
-      break;
+      continue;
     }
 
-    // At this point we've consumed newlines + indent spaces (as lexer progress),
-    // but we must not over-consume if we looked past EOF.
-    // Now decide token based on indent vs stack.
+    if (mode == JS_LINE_COMMENT) {
+      advance(lexer);
+      if (c == '\n' || c == '\r')
+        mode = JS_NORMAL;
+      continue;
+    }
 
-    if (!found_content) {
-      // EOF case after final newline
-      if (valid_symbols[DEDENT] && scanner->len > 1) {
-        // Don't emit newline at EOF if we need a dedent — dedent has priority
-        // But we already consumed the newline chars; mark newline as handled
-        // Re-check: tree-sitter expects dedents before EOF.
-        // We consumed the newline bytes via advance(), but we need to return DEDENT.
-        // The newline will be synthesized as dedent boundary, not a separate token.
-        // Trick: if indent < current top, we should emit DEDENT, not NEWLINE.
-        // So check indent stack.
-        int16_t top = scanner->indents[scanner->len - 1];
-        if ((int16_t)indent < top) {
-          scanner->len--;
-          lexer->result_symbol = DEDENT;
-          return true;
+    if (mode == JS_BLOCK_COMMENT) {
+      if (c == '*') {
+        advance(lexer);
+        if (lexer->lookahead == '/') {
+          advance(lexer);
+          mode = JS_NORMAL;
         }
+      } else {
+        advance(lexer);
       }
-      if (valid_symbols[NEWLINE] && has_newline) {
-        lexer->result_symbol = NEWLINE;
-        return true;
-      }
-      return false;
+      continue;
     }
 
-    // found_content == true, indent is column of next real line
-    int16_t top = scanner->len > 0 ? scanner->indents[scanner->len - 1] : 0;
-
-    if ((int16_t)indent > top) {
-      // Indent increase
-      if (valid_symbols[INDENT]) {
-        if (scanner->len < MAX_INDENTS) {
-          scanner->indents[scanner->len++] = (int16_t)indent;
-        }
-        lexer->result_symbol = INDENT;
-        return true;
+    if (mode == JS_REGEX || mode == JS_REGEX_CHARACTER_CLASS) {
+      if (c == '\\') {
+        advance(lexer);
+        if (!lexer->eof(lexer))
+          advance(lexer);
+      } else if (mode == JS_REGEX && c == '[') {
+        advance(lexer);
+        mode = JS_REGEX_CHARACTER_CLASS;
+      } else if (mode == JS_REGEX_CHARACTER_CLASS && c == ']') {
+        advance(lexer);
+        mode = JS_REGEX;
+      } else if (mode == JS_REGEX && c == '/') {
+        advance(lexer);
+        while (is_identifier_continue(lexer->lookahead))
+          advance(lexer);
+        mode = JS_NORMAL;
+        can_start_regex = false;
+      } else {
+        advance(lexer);
       }
-      // If INDENT not valid here (error recovery), just emit newline and keep stack
-      // but parser will error. We still need to not lose indent.
-      // Push anyway to keep sync, then fall through to newline?
-      if (scanner->len < MAX_INDENTS) {
-        scanner->indents[scanner->len++] = (int16_t)indent;
-      }
-    } else if ((int16_t)indent < top) {
-      // Dedent — may be multiple levels, but we emit one per scan call
-      if (valid_symbols[DEDENT]) {
-        scanner->len--;
-        lexer->result_symbol = DEDENT;
-        return true;
-      }
-      // If DEDENT not expected, still pop to resync? Pop until <= indent
-      // so future calls emit correct sequence.
-      while (scanner->len > 1 && scanner->indents[scanner->len - 1] > (int16_t)indent) {
-        scanner->len--;
-      }
+      continue;
     }
 
-    // Same indent level — emit newline
-    if (valid_symbols[NEWLINE] && has_newline) {
-      lexer->result_symbol = NEWLINE;
-      // Mark end so lexer doesn't re-consume indent spaces as content
+    if (c == '}' && brace_depth == 0) {
       lexer->mark_end(lexer);
+      lexer->result_symbol = EXPRESSION_CONTENT;
       return true;
     }
-    return false;
+
+    if (c == '\'' || c == '"') {
+      mode = c == '\'' ? JS_SINGLE_QUOTE : JS_DOUBLE_QUOTE;
+      advance(lexer);
+      continue;
+    }
+
+    if (c == '`') {
+      mode = JS_TEMPLATE;
+      advance(lexer);
+      continue;
+    }
+
+    if (c == '/') {
+      advance(lexer);
+      if (lexer->lookahead == '/') {
+        advance(lexer);
+        mode = JS_LINE_COMMENT;
+      } else if (lexer->lookahead == '*') {
+        advance(lexer);
+        mode = JS_BLOCK_COMMENT;
+      } else if (can_start_regex) {
+        mode = JS_REGEX;
+      } else {
+        can_start_regex = true;
+      }
+      continue;
+    }
+
+    if (is_identifier_start(c)) {
+      char word[16];
+      size_t word_len = 0;
+      while (is_identifier_continue(lexer->lookahead)) {
+        if (word_len + 1 < sizeof(word))
+          word[word_len++] = (char)lexer->lookahead;
+        advance(lexer);
+      }
+      word[word_len] = '\0';
+      can_start_regex = keyword_allows_regex(word);
+      continue;
+    }
+
+    if (c == '{') {
+      brace_depth++;
+      can_start_regex = true;
+      advance(lexer);
+      continue;
+    }
+
+    if (c == '}') {
+      advance(lexer);
+      brace_depth--;
+      can_start_regex = false;
+      if (template_depth_count > 0 &&
+          brace_depth == template_depths[template_depth_count - 1]) {
+        template_depth_count--;
+        mode = JS_TEMPLATE;
+      }
+      continue;
+    }
+
+    if (c == ')' || c == ']' || c == '.') {
+      can_start_regex = false;
+    } else if (c == '(' || c == '[' || c == ',' || c == ':' || c == ';' ||
+               c == '?' || c == '=' || c == '!' || c == '&' || c == '|' ||
+               c == '+' || c == '-' || c == '*' || c == '%' || c == '^' ||
+               c == '~' || c == '<' || c == '>') {
+      can_start_regex = true;
+    } else if (c >= '0' && c <= '9') {
+      can_start_regex = false;
+    }
+
+    advance(lexer);
   }
 
-  // Not at newline — handle dedents at EOF or when parser expects them mid-stream?
-  // Python scanner also handles case where indent is expected but we're not at newline:
-  // It will skip spaces to EOL to check. We already handled that above.
-  // If we're not at newline and DEDENT is valid and stack > 0, check if next is EOF?
+  lexer->mark_end(lexer);
+  lexer->result_symbol = EXPRESSION_CONTENT;
+  return true;
+}
 
-  if (lexer->eof(lexer) && valid_symbols[DEDENT] && scanner->len > 1) {
+// Count indentation columns using the same two-column tab width configured for
+// Beast in Zed.
+static bool scan(TSLexer *lexer, const bool *valid_symbols, Scanner *scanner) {
+  lexer->mark_end(lexer);
+
+  bool found_end_of_line = false;
+  uint16_t indent = 0;
+
+  for (;;) {
+    if (lexer->lookahead == '\n') {
+      found_end_of_line = true;
+      indent = 0;
+      skip(lexer);
+    } else if (lexer->lookahead == '\r') {
+      found_end_of_line = true;
+      indent = 0;
+      skip(lexer);
+    } else if (lexer->lookahead == ' ') {
+      indent++;
+      skip(lexer);
+    } else if (lexer->lookahead == '\t') {
+      indent += (uint16_t)(TAB_WIDTH - (indent % TAB_WIDTH));
+      skip(lexer);
+    } else if (lexer->eof(lexer)) {
+      found_end_of_line = true;
+      indent = 0;
+      break;
+    } else {
+      break;
+    }
+  }
+
+  if (!found_end_of_line)
+    return false;
+
+  int16_t current_indent = scanner->indents[scanner->len - 1];
+
+  if (valid_symbols[INDENT] && indent > (uint16_t)current_indent) {
+    if (scanner->len == MAX_INDENTS)
+      return false;
+    scanner->indents[scanner->len++] = (int16_t)indent;
+    lexer->mark_end(lexer);
+    lexer->result_symbol = INDENT;
+    return true;
+  }
+
+  if (valid_symbols[DEDENT] && indent < (uint16_t)current_indent) {
     scanner->len--;
+    if (indent >= (uint16_t)scanner->indents[scanner->len - 1]) {
+      lexer->mark_end(lexer);
+    }
     lexer->result_symbol = DEDENT;
     return true;
   }
 
-  // If parser is in error recovery and expects ERROR_SENTINEL, emit it
-  if (valid_symbols[ERROR_SENTINEL]) {
-    // Python grammar uses this to recover from invalid dedents
-    // We emit it when indent is inconsistent
-    // For now, just allow recovery by consuming one char
-    return false;
+  if (valid_symbols[NEWLINE]) {
+    if (indent == (uint16_t)current_indent)
+      lexer->mark_end(lexer);
+    lexer->result_symbol = NEWLINE;
+    return true;
   }
 
   return false;
 }
 
 bool tree_sitter_beast_external_scanner_scan(void *payload, TSLexer *lexer,
-                                              const bool *valid_symbols) {
+                                             const bool *valid_symbols) {
   Scanner *scanner = (Scanner *)payload;
   // Initialize stack with 0 base if empty
   if (scanner->len == 0) {
     scanner->indents[0] = 0;
     scanner->len = 1;
+  }
+  if (valid_symbols[EXPRESSION_CONTENT] && !valid_symbols[ERROR_SENTINEL] &&
+      scan_expression_content(lexer)) {
+    return true;
   }
   return scan(lexer, valid_symbols, scanner);
 }

@@ -1,0 +1,17 @@
+.card
+// <- punctuation.special
+
+h1 Hello
+// <- tag
+
+Button(title="hi")
+// <- constructor
+
+if user
+// <- keyword
+
+| explicit text
+// <- punctuation.special
+
+// Beast comment
+// <- comment

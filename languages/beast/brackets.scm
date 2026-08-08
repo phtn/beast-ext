@@ -3,10 +3,9 @@
 ("(" @open ")" @close)
 ("{" @open "}" @close)
 ("#{" @open "}" @close)
-("[" @open "]" @close)
-("\"" @open "\"" @close)
-("'" @open "'" @close)
 
-; Attributes parens are also brackets — already covered by "(" handling
-; but keep explicit for completeness
-(attributes "(" @open ")" @close)
+(("\"" @open "\"" @close)
+  (#set! rainbow.exclude))
+
+(("'" @open "'" @close)
+  (#set! rainbow.exclude))

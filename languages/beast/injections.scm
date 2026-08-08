@@ -7,9 +7,12 @@
   body: (expression_body) @injection.content
   (#set! injection.language "tsx"))
 
-; JS inside attribute { ... } e.g. key={message.id}, onClick={() => {}}
-(expression
-  body: (expression_body) @injection.content
+; JS inside attribute { ... } e.g. key={message.id}, onClick={() => {}}.
+; Anchor the expression to an attribute so nested JS braces are not injected
+; a second time.
+(attribute
+  value: (expression
+    body: (expression_body) @injection.content)
   (#set! injection.language "tsx"))
 
 ; Conditions after if/elseif/each are raw JS expressions on the same line:

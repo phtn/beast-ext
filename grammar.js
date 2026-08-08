@@ -4,14 +4,15 @@
 module.exports = grammar({
   name: 'beast',
 
-  // Only spaces/carriage-returns are auto-skipped between tokens. Newlines
+  // Only horizontal whitespace is auto-skipped between tokens. Newlines
   // and indentation are meaningful and handled explicitly by the external
   // scanner (src/scanner.c), which emits _newline / _indent / _dedent based
   // on each line's leading-space column, the same strategy tree-sitter's
   // own Python and YAML grammars use.
   extras: ($) => [/[ \t]/],
 
-  externals: ($) => [$._newline, $._indent, $._dedent, $._error_sentinel],
+  externals: ($) =>
+    [$._newline, $._indent, $._dedent, $._error_sentinel, $._expression_content],
 
   // Lets tree-sitter prefer literal keyword tokens ("if", "each", ...) over
   // the generic `identifier` token whenever both would match the same text.
@@ -20,11 +21,13 @@ module.exports = grammar({
   conflicts: ($) => [],
 
   rules: {
-    source_file: ($) => repeat($._statement),
+    source_file: ($) => seq(optional($._newline), repeat($._statement)),
 
-    _statement: ($) => choice($.comment, $.if_statement, $.each_statement, $.text_line, $.element),
+    _statement: ($) =>
+      choice($._comment_statement, $.if_statement, $.each_statement, $.text_line, $.element),
 
-    comment: ($) => token(seq('//', /[^\n]*/)),
+    _comment_statement: ($) => seq($.comment, $._newline),
+    comment: ($) => token(seq('//', /[^\r\n]*/)),
 
     // ---- element lines: `.card`, `#main.wrap`, `Button(...) label` ----
     element: ($) =>
@@ -32,8 +35,7 @@ module.exports = grammar({
         field('selector', $.selector),
         optional(field('attributes', $.attributes)),
         optional(field('text', $.text_content)),
-        $._newline,
-        optional($.block)
+        choice($._newline, field('block', $.block))
       ),
 
     selector: ($) =>
@@ -49,16 +51,25 @@ module.exports = grammar({
     attributes: ($) => seq('(', repeat(seq($.attribute, optional(','))), ')'),
 
     attribute: ($) =>
-      seq(field('name', $.identifier), optional(seq('=', field('value', choice($.string, $.expression))))),
+      seq(
+        field('name', $.attribute_name),
+        optional(seq('=', field('value', choice($.string, $.expression))))
+      ),
 
     // ---- if / elseif / else chain ----
     if_statement: ($) => seq($.if_clause, repeat($.elseif_clause), optional($.else_clause)),
 
-    if_clause: ($) => seq('if', field('condition', $.line_expression), $._newline, optional($.block)),
+    if_clause: ($) =>
+      seq('if', field('condition', $.line_expression), choice($._newline, field('block', $.block))),
 
-    elseif_clause: ($) => seq('elseif', field('condition', $.line_expression), $._newline, optional($.block)),
+    elseif_clause: ($) =>
+      seq(
+        'elseif',
+        field('condition', $.line_expression),
+        choice($._newline, field('block', $.block))
+      ),
 
-    else_clause: ($) => seq('else', $._newline, optional($.block)),
+    else_clause: ($) => seq('else', choice($._newline, field('block', $.block))),
 
     // ---- each item[, index] in iterable ----
     each_statement: ($) =>
@@ -68,36 +79,47 @@ module.exports = grammar({
         optional(seq(',', field('index', $.identifier))),
         'in',
         field('iterable', $.line_expression),
-        $._newline,
-        optional($.block)
+        choice($._newline, field('block', $.block))
       ),
 
     // ---- explicit text-only line: `| some text #{expr}` ----
     text_line: ($) => seq('|', optional(field('text', $.text_content)), $._newline),
 
-    block: ($) => seq($._indent, repeat1($._statement), $._dedent),
+    block: ($) => seq($._newline, $._indent, repeat1($._statement), $._dedent),
 
     // ---- text content with #{...} interpolation ----
     text_content: ($) => repeat1(choice($.interpolation, $.text_fragment)),
 
     text_fragment: ($) => token(prec(-1, /[^\n#]+|#/)),
 
-    interpolation: ($) => seq('#{', field('body', alias($._brace_body, $.expression_body)), '}'),
+    interpolation: ($) =>
+      seq(
+        '#{',
+        optional(field('body', alias($._expression_content, $.expression_body))),
+        '}'
+      ),
 
-    expression: ($) => seq('{', field('body', alias($._brace_body, $.expression_body)), '}'),
-
-    // Balanced-brace raw content, recursively — this lets `{ onClick: () =>
-    // ({ x: 1 }) }` nest arbitrarily deep without an external scanner.
-    _brace_body: ($) => repeat1(choice($._brace_char, $.expression)),
-    _brace_char: ($) => token(prec(-1, /[^{}]+/)),
+    expression: ($) =>
+      seq(
+        '{',
+        optional(field('body', alias($._expression_content, $.expression_body))),
+        '}'
+      ),
 
     // Rest-of-line raw expression text, used for if/elseif/each conditions
     // where there's no brace delimiter (e.g. `if user.isAdmin`).
     line_expression: ($) => token(prec(-1, /[^\n]+/)),
 
-    string: ($) => choice(seq('"', optional(/[^"\n]*/), '"'), seq("'", optional(/[^'\n]*/), "'")),
+    string: ($) =>
+      choice(
+        seq('"', repeat(choice($.escape_sequence, /[^"\\\r\n]+/)), '"'),
+        seq("'", repeat(choice($.escape_sequence, /[^'\\\r\n]+/)), "'")
+      ),
+
+    escape_sequence: ($) => token(seq('\\', /[^\r\n]/)),
 
     identifier: ($) => /[A-Za-z_][A-Za-z0-9_]*/,
+    attribute_name: ($) => /[A-Za-z_][A-Za-z0-9_:.-]*/,
     css_name: ($) => /[A-Za-z_][A-Za-z0-9_-]*/
   }
 })

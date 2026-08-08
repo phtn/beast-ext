@@ -1,0 +1,15 @@
+
+// top-level comment
+.card(data-id="root" aria-label='Card')
+  .header
+    h1 Welcome, #{user.name}
+  .body
+    if user.isAdmin
+      AdminPanel(userId={user.id} onClick={() => {}})
+    elseif user.isGuest
+      | Guest account
+    else
+      each message, i in messages.filter(item => item.visible)
+        li.message(key={message.id}) #{message.text}
+  // nested comment
+footer Done

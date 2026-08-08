@@ -5,14 +5,16 @@
       "name": "beast",
       "scope": "source.beast",
       "path": ".",
-      "file-types": ["btsx"]
+      "file-types": ["btsx"],
+      "highlights": "languages/beast/highlights.scm",
+      "injections": "languages/beast/injections.scm"
     }
   ],
   "metadata": {
     "version": "0.1.0",
     "description": "Beast (.btsx) grammar",
     "authors": [{"name": "phtn"}],
-    "license": "ISC"
+    "license": "MIT"
   },
   "bindings": {
     "c": true,

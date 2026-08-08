@@ -15,6 +15,12 @@
   "in"
 ] @keyword
 
+(each_statement
+  item: (identifier) @variable.parameter)
+
+(each_statement
+  index: (identifier) @variable.parameter)
+
 ; Pipes for explicit text lines
 (text_line "|" @punctuation.special)
 
@@ -35,9 +41,10 @@
 (id_selector name: (css_name) @property)
 
 ; Attributes: name and values
-(attribute name: (identifier) @property)
+(attribute name: (attribute_name) @property)
 
 (string) @string
+(escape_sequence) @string.escape
 ; attribute values that are expressions: the braces themselves
 (expression "{" @punctuation.bracket)
 (expression "}" @punctuation.bracket)

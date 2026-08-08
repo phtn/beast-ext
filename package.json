@@ -2,13 +2,22 @@
   "name": "beast-ext",
   "version": "0.1.0",
   "description": "Beast (.btsx) Zed extension grammar",
+  "license": "MIT",
   "private": true,
   "scripts": {
+    "test": "sh scripts/verify.sh",
     "generate": "tree-sitter generate",
     "parse": "tree-sitter parse",
-    "highlight": "tree-sitter highlight"
+    "highlight": "tree-sitter highlight",
+    "test:corpus": "tree-sitter test",
+    "test:fuzz": "tree-sitter fuzz -p . --iterations 100 --edits 5",
+    "build:wasm": "tree-sitter build -w -o grammars/beast.wasm ."
   },
   "devDependencies": {
-    "tree-sitter-cli": "^0.26.11"
+    "@taplo/cli": "^0.7.0",
+    "tree-sitter-cli": "^0.26.12"
+  },
+  "allowScripts": {
+    "tree-sitter-cli@0.26.12": true
   }
 }
