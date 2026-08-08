@@ -3,12 +3,12 @@ name = "Beast"
 version = "0.1.0"
 authors = ["phtn"]
 description = "Syntax highlighting for Beast (.btsx) — Pug-style, indentation-based TSX"
-homepage = "https://github.com/phtn/beast"
-repository = "https://github.com/phtn/beast"
+homepage = "https://github.com/phtn/beast-ext"
+repository = "https://github.com/phtn/beast-ext"
 keywords = ["beast", "btsx", "tsx", "jsx"]
 
 schema_version = 1
 
 [grammars.beast]
-repository = "file:///Users/xpriori/Code/beast.ext"
-rev = "b8a900bfd28922d6fc333f57d85ea3ce9d9f7146"
+repository = "https://github.com/phtn/beast-ext"
+rev = "a086566384a9c3114676fdf4e2fd5b65470b34b8"
