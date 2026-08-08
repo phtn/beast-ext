@@ -1,0 +1,25 @@
+{
+  "$schema": "https://tree-sitter.github.io/tree-sitter/assets/schemas/config.schema.json",
+  "grammars": [
+    {
+      "name": "beast",
+      "scope": "source.beast",
+      "path": ".",
+      "file-types": ["btsx"]
+    }
+  ],
+  "metadata": {
+    "version": "0.1.0",
+    "description": "Beast (.btsx) grammar",
+    "authors": [{"name": "phtn"}],
+    "license": "ISC"
+  },
+  "bindings": {
+    "c": true,
+    "node": true,
+    "python": false,
+    "rust": false,
+    "go": false,
+    "swift": false
+  }
+}

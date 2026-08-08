@@ -1,0 +1,14 @@
+{
+  "name": "beast-ext",
+  "version": "0.1.0",
+  "description": "Beast (.btsx) Zed extension grammar",
+  "private": true,
+  "scripts": {
+    "generate": "tree-sitter generate",
+    "parse": "tree-sitter parse",
+    "highlight": "tree-sitter highlight"
+  },
+  "devDependencies": {
+    "tree-sitter-cli": "^0.26.11"
+  }
+}

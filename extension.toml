@@ -1,0 +1,14 @@
+id = "beast"
+name = "Beast"
+version = "0.1.0"
+authors = ["phtn"]
+description = "Syntax highlighting for Beast (.btsx) — Pug-style, indentation-based TSX"
+homepage = "https://github.com/phtn/beast"
+repository = "https://github.com/phtn/beast"
+keywords = ["beast", "btsx", "tsx", "jsx"]
+
+schema_version = 1
+
+[grammars.beast]
+repository = "file:///Users/xpriori/Code/beast.ext"
+rev = "aed9abb4bb9f4e94e0daf2d5f77e8caf5bdc2ba2"
