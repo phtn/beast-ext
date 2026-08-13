@@ -1,14 +1,16 @@
 # Beast for Zed
 
-Syntax highlighting and structural editing for Beast (`.btsx`), a Pug-style,
-indentation-based language that compiles to TSX.
+Syntax highlighting and structural editing for Beast (`.btsx`), an
+indentation-first component language that compiles to Octane-native TSRX.
 
 ## Features
 
 - `.btsx` file detection
 - Nested indentation-aware parsing
-- Highlighting for selectors, attributes, text, control flow, and comments
-- TSX injection for attributes, interpolations, and control-flow expressions
+- Highlighting for source declarations, selectors, attributes, text, Octane
+  control flow, and comments
+- TypeScript injection for module and setup source, attributes,
+  interpolations, and control-flow expressions
 - Bracket matching, folding, outlines, and editor indentation
 
 ## Install for development

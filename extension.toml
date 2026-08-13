@@ -2,10 +2,10 @@ id = "beast"
 name = "Beast"
 version = "0.1.0"
 authors = ["phtn"]
-description = "Syntax highlighting for Beast (.btsx) — Pug-style, indentation-based TSX"
+description = "Syntax highlighting for Beast (.btsx) — indentation-first Octane TSRX"
 homepage = "https://github.com/phtn/beast-ext"
 repository = "https://github.com/phtn/beast-ext"
-keywords = ["beast", "btsx", "tsx", "jsx"]
+keywords = ["beast", "btsx", "tsrx", "octane"]
 
 schema_version = 1
 

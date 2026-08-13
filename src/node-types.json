@@ -69,10 +69,70 @@
           "named": true
         },
         {
+          "type": "switch_statement",
+          "named": true
+        },
+        {
           "type": "text_line",
+          "named": true
+        },
+        {
+          "type": "try_statement",
           "named": true
         }
       ]
+    }
+  },
+  {
+    "type": "case_clause",
+    "named": true,
+    "fields": {
+      "block": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "block",
+            "named": true
+          }
+        ]
+      },
+      "condition": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "line_expression",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "catch_clause",
+    "named": true,
+    "fields": {
+      "bindings": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "line_expression",
+            "named": true
+          }
+        ]
+      },
+      "block": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "block",
+            "named": true
+          }
+        ]
+      }
     }
   },
   {
@@ -92,6 +152,111 @@
     }
   },
   {
+    "type": "component_block",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "comment",
+          "named": true
+        },
+        {
+          "type": "each_statement",
+          "named": true
+        },
+        {
+          "type": "element",
+          "named": true
+        },
+        {
+          "type": "if_statement",
+          "named": true
+        },
+        {
+          "type": "props_declaration",
+          "named": true
+        },
+        {
+          "type": "setup_declaration",
+          "named": true
+        },
+        {
+          "type": "switch_statement",
+          "named": true
+        },
+        {
+          "type": "text_line",
+          "named": true
+        },
+        {
+          "type": "try_statement",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "component_declaration",
+    "named": true,
+    "fields": {
+      "body": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "component_block",
+            "named": true
+          }
+        ]
+      },
+      "name": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "component_name",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "component_member",
+    "named": true,
+    "fields": {
+      "name": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "component_member_name",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "default_clause",
+    "named": true,
+    "fields": {
+      "block": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "block",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
     "type": "each_statement",
     "named": true,
     "fields": {
@@ -101,6 +266,16 @@
         "types": [
           {
             "type": "block",
+            "named": true
+          }
+        ]
+      },
+      "empty": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "empty_clause",
             "named": true
           }
         ]
@@ -128,6 +303,16 @@
       "iterable": {
         "multiple": false,
         "required": true,
+        "types": [
+          {
+            "type": "line_expression",
+            "named": true
+          }
+        ]
+      },
+      "key": {
+        "multiple": false,
+        "required": false,
         "types": [
           {
             "type": "line_expression",
@@ -226,6 +411,22 @@
     }
   },
   {
+    "type": "empty_clause",
+    "named": true,
+    "fields": {
+      "block": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "block",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
     "type": "expression",
     "named": true,
     "fields": {
@@ -307,6 +508,22 @@
     }
   },
   {
+    "type": "import_declaration",
+    "named": true,
+    "fields": {
+      "source": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "line_expression",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
     "type": "interpolation",
     "named": true,
     "fields": {
@@ -323,15 +540,86 @@
     }
   },
   {
+    "type": "line_expression",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "module_declaration",
+    "named": true,
+    "fields": {
+      "source": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "source_block",
+            "named": true
+          },
+          {
+            "type": "source_code",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "pending_clause",
+    "named": true,
+    "fields": {
+      "block": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "block",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "props_declaration",
+    "named": true,
+    "fields": {
+      "parameter": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "line_expression",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
     "type": "selector",
     "named": true,
     "fields": {
+      "member": {
+        "multiple": true,
+        "required": false,
+        "types": [
+          {
+            "type": "component_member",
+            "named": true
+          }
+        ]
+      },
       "tag": {
         "multiple": false,
         "required": false,
         "types": [
           {
-            "type": "identifier",
+            "type": "component_name",
+            "named": true
+          },
+          {
+            "type": "tag_name",
             "named": true
           }
         ]
@@ -353,6 +641,46 @@
     }
   },
   {
+    "type": "setup_declaration",
+    "named": true,
+    "fields": {
+      "source": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "source_block",
+            "named": true
+          },
+          {
+            "type": "source_code",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "source_block",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "source_statement",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "source_code",
+    "named": true,
+    "fields": {}
+  },
+  {
     "type": "source_file",
     "named": true,
     "root": true,
@@ -363,6 +691,10 @@
       "types": [
         {
           "type": "comment",
+          "named": true
+        },
+        {
+          "type": "component_declaration",
           "named": true
         },
         {
@@ -378,10 +710,60 @@
           "named": true
         },
         {
+          "type": "import_declaration",
+          "named": true
+        },
+        {
+          "type": "module_declaration",
+          "named": true
+        },
+        {
+          "type": "props_declaration",
+          "named": true
+        },
+        {
+          "type": "setup_declaration",
+          "named": true
+        },
+        {
+          "type": "switch_statement",
+          "named": true
+        },
+        {
           "type": "text_line",
+          "named": true
+        },
+        {
+          "type": "try_statement",
           "named": true
         }
       ]
+    }
+  },
+  {
+    "type": "source_statement",
+    "named": true,
+    "fields": {
+      "continuation": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "source_block",
+            "named": true
+          }
+        ]
+      },
+      "source": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "source_code",
+            "named": true
+          }
+        ]
+      }
     }
   },
   {
@@ -397,6 +779,55 @@
           "named": true
         }
       ]
+    }
+  },
+  {
+    "type": "switch_block",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "case_clause",
+          "named": true
+        },
+        {
+          "type": "comment",
+          "named": true
+        },
+        {
+          "type": "default_clause",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "switch_statement",
+    "named": true,
+    "fields": {
+      "body": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "switch_block",
+            "named": true
+          }
+        ]
+      },
+      "discriminant": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "line_expression",
+            "named": true
+          }
+        ]
+      }
     }
   },
   {
@@ -432,6 +863,45 @@
           }
         ]
       }
+    }
+  },
+  {
+    "type": "try_clause",
+    "named": true,
+    "fields": {
+      "block": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "block",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "try_statement",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "catch_clause",
+          "named": true
+        },
+        {
+          "type": "pending_clause",
+          "named": true
+        },
+        {
+          "type": "try_clause",
+          "named": true
+        }
+      ]
     }
   },
   {
@@ -475,12 +945,36 @@
     "named": true
   },
   {
+    "type": "case",
+    "named": false
+  },
+  {
+    "type": "catch",
+    "named": false
+  },
+  {
     "type": "comment",
+    "named": true
+  },
+  {
+    "type": "component",
+    "named": false
+  },
+  {
+    "type": "component_member_name",
+    "named": true
+  },
+  {
+    "type": "component_name",
     "named": true
   },
   {
     "type": "css_name",
     "named": true
+  },
+  {
+    "type": "default",
+    "named": false
   },
   {
     "type": "each",
@@ -492,6 +986,10 @@
   },
   {
     "type": "elseif",
+    "named": false
+  },
+  {
+    "type": "empty",
     "named": false
   },
   {
@@ -511,16 +1009,48 @@
     "named": false
   },
   {
+    "type": "import",
+    "named": false
+  },
+  {
     "type": "in",
     "named": false
   },
   {
-    "type": "line_expression",
+    "type": "key",
+    "named": false
+  },
+  {
+    "type": "module",
+    "named": false
+  },
+  {
+    "type": "pending",
+    "named": false
+  },
+  {
+    "type": "props",
+    "named": false
+  },
+  {
+    "type": "setup",
+    "named": false
+  },
+  {
+    "type": "switch",
+    "named": false
+  },
+  {
+    "type": "tag_name",
     "named": true
   },
   {
     "type": "text_fragment",
     "named": true
+  },
+  {
+    "type": "try",
+    "named": false
   },
   {
     "type": "{",

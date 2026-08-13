@@ -1,0 +1,32 @@
+import type { View } from "./types.ts";
+module
+  interface Props {
+    items: View[];
+  }
+  const fallback = "none";
+
+component EmptyState
+  props { label }: { label: string }
+  setup const message = label.toUpperCase();
+  p #{message}
+props { items, status, resource }: Props & { status: string; resource: Promise<View> }
+setup const visibleItems = items.filter((item) => item.visible);
+
+Theme.Provider(value={status})
+  each item, index in visibleItems key item.id
+    Card.featured(data-index={index}) #{item.label}
+  empty
+    EmptyState(label={fallback})
+  each option in " key ".split(" ") key option
+    span #{option}
+  switch status
+    case "ready"
+      ReadyView
+    default
+      UnknownView
+  try
+    AsyncView(resource={resource})
+  pending
+    p Loading
+  catch (error, reset)
+    button(onClick={reset}) #{String(error)}

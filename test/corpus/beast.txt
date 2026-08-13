@@ -29,7 +29,7 @@ Nested elements and control flow
         (block
           (element
             (selector
-              (identifier))
+              (tag_name))
             (text_content
               (text_fragment)
               (interpolation
@@ -45,7 +45,7 @@ Nested elements and control flow
               (block
                 (element
                   (selector
-                    (identifier))
+                    (component_name))
                   (attributes
                     (attribute
                       (attribute_name)
@@ -66,7 +66,7 @@ Nested elements and control flow
                   (block
                     (element
                       (selector
-                        (identifier)
+                        (tag_name)
                         (class_selector
                           (css_name)))
                       (attributes
@@ -96,12 +96,12 @@ main
   (comment)
   (element
     (selector
-      (identifier))
+      (tag_name))
     (block
       (comment)
       (element
         (selector
-          (identifier))
+          (tag_name))
         (text_content
           (text_fragment)))))
   (comment))
@@ -124,7 +124,7 @@ div(onClick={() => {}} empty={{}}) Empty braces
 (source_file
   (element
     (selector
-      (identifier))
+      (tag_name))
     (attributes
       (attribute
         (attribute_name)
@@ -141,49 +141,49 @@ div(onClick={() => {}} empty={{}}) Empty braces
       (text_fragment)))
   (element
     (selector
-      (identifier))
+      (tag_name))
     (text_content
       (text_fragment)
       (interpolation
         (expression_body))))
   (element
     (selector
-      (identifier))
+      (tag_name))
     (text_content
       (text_fragment)
       (interpolation
         (expression_body))))
   (element
     (selector
-      (identifier))
+      (tag_name))
     (text_content
       (text_fragment)
       (interpolation
         (expression_body))))
   (element
     (selector
-      (identifier))
+      (tag_name))
     (text_content
       (text_fragment)
       (interpolation
         (expression_body))))
   (element
     (selector
-      (identifier))
+      (tag_name))
     (text_content
       (text_fragment)
       (interpolation
         (expression_body))))
   (element
     (selector
-      (identifier))
+      (tag_name))
     (text_content
       (text_fragment)
       (interpolation
         (expression_body))))
   (element
     (selector
-      (identifier))
+      (tag_name))
     (attributes
       (attribute
         (attribute_name)
@@ -209,7 +209,7 @@ App#root.shell(enabled)
 (source_file
   (element
     (selector
-      (identifier)
+      (component_name)
       (id_selector
         (css_name))
       (class_selector
@@ -232,27 +232,160 @@ App#root.shell(enabled)
                 (expression_body)))))))))
 
 ================================================================================
-Tab indentation
+Compiler declarations and Octane control flow
 ================================================================================
 
-main
-	span Tab-indented child
-aside Sibling
+import type { View } from "./types.ts";
+module
+  interface Props { items: View[] }
+  const fallback = "none";
+component EmptyState
+  props { label }: { label: string }
+  setup const message = label.toUpperCase();
+  p #{message}
+props { items, status, resource }: Props & { status: string; resource: Promise<View> }
+setup const visibleItems = items.filter((item) => item.visible);
+Theme.Provider(value={status})
+  each item, index in visibleItems key item.id
+    Card.featured(data-index={index}) #{item.label}
+  empty
+    EmptyState(label={fallback})
+  each option in " key ".split(" ") key option
+    span #{option}
+  switch status
+    case "ready"
+      ReadyView
+    default
+      UnknownView
+  try
+    AsyncView(resource={resource})
+  pending
+    p Loading
+  catch (error, reset)
+    button(onClick={reset}) #{String(error)}
 
 --------------------------------------------------------------------------------
 
 (source_file
-  (element
-    (selector
-      (identifier))
-    (block
+  (import_declaration
+    (line_expression))
+  (module_declaration
+    (source_block
+      (source_statement
+        (source_code))
+      (source_statement
+        (source_code))))
+  (component_declaration
+    (component_name)
+    (component_block
+      (props_declaration
+        (line_expression))
+      (setup_declaration
+        (source_code))
       (element
         (selector
-          (identifier))
+          (tag_name))
         (text_content
-          (text_fragment)))))
+          (interpolation
+            (expression_body))))))
+  (props_declaration
+    (line_expression))
+  (setup_declaration
+    (source_code))
   (element
     (selector
-      (identifier))
-    (text_content
-      (text_fragment))))
+      (component_name)
+      (component_member
+        (component_member_name)))
+    (attributes
+      (attribute
+        (attribute_name)
+        (expression
+          (expression_body))))
+    (block
+      (each_statement
+        (identifier)
+        (identifier)
+        (line_expression)
+        (line_expression)
+        (block
+          (element
+            (selector
+              (component_name)
+              (class_selector
+                (css_name)))
+            (attributes
+              (attribute
+                (attribute_name)
+                (expression
+                  (expression_body))))
+            (text_content
+              (interpolation
+                (expression_body)))))
+        (empty_clause
+          (block
+            (element
+              (selector
+                (component_name))
+              (attributes
+                (attribute
+                  (attribute_name)
+                  (expression
+                    (expression_body))))))))
+      (each_statement
+        (identifier)
+        (line_expression)
+        (line_expression)
+        (block
+          (element
+            (selector
+              (tag_name))
+            (text_content
+              (interpolation
+                (expression_body))))))
+      (switch_statement
+        (line_expression)
+        (switch_block
+          (case_clause
+            (line_expression)
+            (block
+              (element
+                (selector
+                  (component_name)))))
+          (default_clause
+            (block
+              (element
+                (selector
+                  (component_name)))))))
+      (try_statement
+        (try_clause
+          (block
+            (element
+              (selector
+                (component_name))
+              (attributes
+                (attribute
+                  (attribute_name)
+                  (expression
+                    (expression_body)))))))
+        (pending_clause
+          (block
+            (element
+              (selector
+                (tag_name))
+              (text_content
+                (text_fragment)))))
+        (catch_clause
+          (line_expression)
+          (block
+            (element
+              (selector
+                (tag_name))
+              (attributes
+                (attribute
+                  (attribute_name)
+                  (expression
+                    (expression_body))))
+              (text_content
+                (interpolation
+                  (expression_body))))))))))

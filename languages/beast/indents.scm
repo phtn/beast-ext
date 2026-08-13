@@ -1,10 +1,19 @@
-; Beast indents — Python-style indentation
-; Zed uses @indent to decide when Enter should indent, and @end to dedent.
+; Beast indents — indentation opens template, component, and source blocks.
 
 [
   (element)
+  (component_declaration)
+  (module_declaration)
+  (setup_declaration)
   (if_clause)
   (elseif_clause)
   (else_clause)
   (each_statement)
+  (empty_clause)
+  (switch_statement)
+  (case_clause)
+  (default_clause)
+  (try_clause)
+  (pending_clause)
+  (catch_clause)
 ] @indent

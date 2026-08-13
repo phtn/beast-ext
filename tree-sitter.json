@@ -12,7 +12,7 @@
   ],
   "metadata": {
     "version": "0.1.0",
-    "description": "Beast (.btsx) grammar",
+    "description": "Beast (.btsx) grammar for Octane TSRX",
     "authors": [{"name": "phtn"}],
     "license": "MIT"
   },

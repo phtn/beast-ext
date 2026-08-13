@@ -17,6 +17,7 @@ enum TokenType {
   DEDENT,
   ERROR_SENTINEL,
   EXPRESSION_CONTENT,
+  EACH_ITERABLE,
 };
 
 #define MAX_INDENTS 64
@@ -291,6 +292,91 @@ static bool scan_expression_content(TSLexer *lexer) {
   return true;
 }
 
+// Scan the iterable portion of `each ... in iterable [key expression]`.
+// Beast recognizes ` key ` only at the top level, outside quoted strings and
+// balanced delimiters. Stop the token before that separator so `key` remains
+// visible to the grammar and can receive its own expression injection.
+static bool scan_each_iterable(TSLexer *lexer) {
+  if (lexer->eof(lexer) || lexer->lookahead == '\n' ||
+      lexer->lookahead == '\r')
+    return false;
+
+  uint32_t delimiter_depth = 0;
+  int32_t quote = 0;
+  bool escaped = false;
+  bool has_content = false;
+
+  while (!lexer->eof(lexer) && lexer->lookahead != '\n' &&
+         lexer->lookahead != '\r') {
+    int32_t c = lexer->lookahead;
+
+    if (quote != 0) {
+      advance(lexer);
+      if (escaped) {
+        escaped = false;
+      } else if (c == '\\') {
+        escaped = true;
+      } else if (c == quote) {
+        quote = 0;
+      }
+      has_content = true;
+      lexer->mark_end(lexer);
+      continue;
+    }
+
+    if (c == '\'' || c == '"' || c == '`') {
+      quote = c;
+      has_content = true;
+      advance(lexer);
+      lexer->mark_end(lexer);
+      continue;
+    }
+
+    if (c == '(' || c == '{' || c == '[') {
+      delimiter_depth++;
+    } else if (c == ')' || c == '}' || c == ']') {
+      if (delimiter_depth > 0)
+        delimiter_depth--;
+    } else if (c == ' ' && delimiter_depth == 0) {
+      uint8_t matched_key_characters = 0;
+      lexer->mark_end(lexer);
+      advance(lexer);
+      if (lexer->lookahead == 'k') {
+        matched_key_characters++;
+        advance(lexer);
+        if (lexer->lookahead == 'e') {
+          matched_key_characters++;
+          advance(lexer);
+          if (lexer->lookahead == 'y') {
+            matched_key_characters++;
+            advance(lexer);
+            if (lexer->lookahead == ' ' && has_content) {
+              lexer->result_symbol = EACH_ITERABLE;
+              return true;
+            }
+          }
+        }
+      }
+      if (matched_key_characters > 0) {
+        has_content = true;
+        lexer->mark_end(lexer);
+      }
+      continue;
+    }
+
+    advance(lexer);
+    if (c != ' ' && c != '\t') {
+      has_content = true;
+      lexer->mark_end(lexer);
+    }
+  }
+
+  if (!has_content)
+    return false;
+  lexer->result_symbol = EACH_ITERABLE;
+  return true;
+}
+
 // Count indentation columns using the same two-column tab width configured for
 // Beast in Zed.
 static bool scan(TSLexer *lexer, const bool *valid_symbols, Scanner *scanner) {
@@ -363,6 +449,10 @@ bool tree_sitter_beast_external_scanner_scan(void *payload, TSLexer *lexer,
   if (scanner->len == 0) {
     scanner->indents[0] = 0;
     scanner->len = 1;
+  }
+  if (valid_symbols[EACH_ITERABLE] && !valid_symbols[ERROR_SENTINEL] &&
+      scan_each_iterable(lexer)) {
+    return true;
   }
   if (valid_symbols[EXPRESSION_CONTENT] && !valid_symbols[ERROR_SENTINEL] &&
       scan_expression_content(lexer)) {

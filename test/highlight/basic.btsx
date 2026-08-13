@@ -15,3 +15,18 @@ if user
 
 // Beast comment
 // <- comment
+
+import type { User } from "./types";
+// <- keyword
+
+module const fallback = "hello";
+// <- keyword
+
+props { user }: { user: User }
+// <- keyword
+
+setup const label = user.name;
+// <- keyword
+
+Theme.Provider
+// <- constructor

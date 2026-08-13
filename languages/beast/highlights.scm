@@ -1,19 +1,32 @@
 ; Beast (.btsx) highlights — tree-sitter query for Zed
-; Node types come from grammar.js (selector, class_selector, id_selector,
-; attributes, attribute, string, interpolation, expression, text_fragment,
-; if_clause/elseif_clause/else_clause, each_statement, comment, etc.)
 
 ; Comments
 (comment) @comment
 
-; Keywords
+; Beast declarations and control flow
 [
+  "import"
+  "module"
+  "component"
+  "props"
+  "setup"
   "if"
   "elseif"
   "else"
   "each"
   "in"
+  "key"
+  "empty"
+  "switch"
+  "case"
+  "default"
+  "try"
+  "pending"
+  "catch"
 ] @keyword
+
+(component_declaration
+  name: (component_name) @function)
 
 (each_statement
   item: (identifier) @variable.parameter)
@@ -24,14 +37,15 @@
 ; Pipes for explicit text lines
 (text_line "|" @punctuation.special)
 
-; Selectors — tags vs components (capitalized = component)
+; Selectors — lowercase tags and component references are distinct nodes.
 (selector
-  tag: (identifier) @tag
-  (#match? @tag "^[a-z]"))
+  tag: (tag_name) @tag)
 
 (selector
-  tag: (identifier) @constructor
-  (#match? @constructor "^[A-Z]"))
+  tag: (component_name) @constructor)
+
+(component_member "." @punctuation.delimiter)
+(component_member name: (component_member_name) @constructor)
 
 ; Classes and ids
 (class_selector "." @punctuation.special)
@@ -40,37 +54,32 @@
 (id_selector "#" @punctuation.special)
 (id_selector name: (css_name) @property)
 
-; Attributes: name and values
+; Attributes: names and values
 (attribute name: (attribute_name) @property)
 
 (string) @string
 (escape_sequence) @string.escape
-; attribute values that are expressions: the braces themselves
+
+; Braces around attribute expressions and interpolations remain Beast
+; punctuation; their contents are highlighted by TypeScript injections.
 (expression "{" @punctuation.bracket)
 (expression "}" @punctuation.bracket)
 
-; Interpolation #{...}
 (interpolation "#{" @punctuation.special)
 (interpolation "}" @punctuation.special)
 
-; The JS/TS inside #{...} and {...} is highlighted via injections.scm,
-; but the braces still get punctuation. The inner identifiers get
-; @variable/@property via the injection.
-
-; Text fragments are plain text
+; Text fragments are literal output.
 (text_fragment) @text.literal
 
-; Punctuation for attribute parens and commas
+; Attribute punctuation.
 (attributes "(" @punctuation.bracket)
 (attributes ")" @punctuation.bracket)
 (attributes "," @punctuation.delimiter)
-
-; Operators inside attribute `=` are covered by the injected JS,
-; but the `=` itself:
 (attribute "=" @operator)
 
-; line_expression (if/each conditions) is injected as JS — no direct capture
-; but fallback to variable if injection missing:
-(line_expression) @variable
-
-; Strings already captured above
+; Embedded source and expressions receive their detailed highlighting from
+; injections.scm. These captures are readable fallbacks when TSX is absent.
+[
+  (source_code)
+  (line_expression)
+] @embedded
