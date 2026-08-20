@@ -41,6 +41,16 @@
     body: (expression_body) @injection.content)
   (#set! injection.language "typescript"))
 
+(spread_attribute
+  argument: (expression_body) @injection.content
+  (#set! injection.language "typescript"))
+
+; Raw style blocks are native CSS with their source indentation preserved.
+(style_statement
+  body: (style_block) @injection.content
+  (#set! injection.language "css")
+  (#set! injection.include-children))
+
 ; Conditions and loop expressions.
 (if_clause
   condition: (line_expression) @injection.content

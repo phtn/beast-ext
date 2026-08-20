@@ -10,11 +10,13 @@ taplo="./node_modules/.bin/taplo"
 "$tree_sitter" generate
 "$tree_sitter" test
 "$tree_sitter" parse -q -p . \
-  test/fixtures/full.btsx test/fixtures/expressions.btsx test/fixtures/compiler.btsx
+  test/fixtures/full.btsx test/fixtures/expressions.btsx \
+  test/fixtures/compiler.btsx test/fixtures/styling.btsx
 
 for query_file in languages/beast/*.scm; do
   "$tree_sitter" query -q -p . "$query_file" \
-    test/fixtures/full.btsx test/fixtures/expressions.btsx test/fixtures/compiler.btsx
+    test/fixtures/full.btsx test/fixtures/expressions.btsx \
+    test/fixtures/compiler.btsx test/fixtures/styling.btsx
 done
 
 cc -std=c11 -Wall -Wextra -Wpedantic -Werror -Isrc \

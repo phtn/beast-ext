@@ -389,3 +389,49 @@ Theme.Provider(value={status})
               (text_content
                 (interpolation
                   (expression_body))))))))))
+
+================================================================================
+Fragments, spread attributes, and scoped styles
+================================================================================
+
+fragment
+  article.card(type="button", {...getProps({ tone: "bright" })}, disabled)
+    h2 Styled card
+  style
+    .card {
+      color: rebeccapurple;
+    }
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (fragment_statement
+    (block
+      (element
+        (selector
+          (tag_name)
+          (class_selector
+            (css_name)))
+        (attributes
+          (attribute
+            (attribute_name)
+            (string))
+          (spread_attribute
+            (expression_body))
+          (attribute
+            (attribute_name)))
+        (block
+          (element
+            (selector
+              (tag_name))
+            (text_content
+              (text_fragment)))))
+      (style_statement
+        (style_block
+          (style_source_statement
+            (style_source)
+            (style_block
+              (style_source_statement
+                (style_source))))
+          (style_source_statement
+            (style_source)))))))

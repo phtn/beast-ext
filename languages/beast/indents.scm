@@ -16,4 +16,6 @@
   (try_clause)
   (pending_clause)
   (catch_clause)
+  (fragment_statement)
+  (style_statement)
 ] @indent

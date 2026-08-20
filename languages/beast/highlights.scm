@@ -23,6 +23,8 @@
   "try"
   "pending"
   "catch"
+  "fragment"
+  "style"
 ] @keyword
 
 (component_declaration
@@ -65,6 +67,10 @@
 (expression "{" @punctuation.bracket)
 (expression "}" @punctuation.bracket)
 
+(spread_attribute "{" @punctuation.bracket)
+(spread_attribute "..." @operator)
+(spread_attribute "}" @punctuation.bracket)
+
 (interpolation "#{" @punctuation.special)
 (interpolation "}" @punctuation.special)
 
@@ -81,5 +87,6 @@
 ; injections.scm. These captures are readable fallbacks when TSX is absent.
 [
   (source_code)
+  (style_source)
   (line_expression)
 ] @embedded

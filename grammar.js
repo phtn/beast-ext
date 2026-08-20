@@ -45,6 +45,8 @@ module.exports = grammar({
         $.each_statement,
         $.switch_statement,
         $.try_statement,
+        $.fragment_statement,
+        $.style_statement,
         $.text_line,
         $.element
       ),
@@ -135,13 +137,26 @@ module.exports = grammar({
     class_selector: ($) => seq('.', field('name', $.css_name)),
     id_selector: ($) => seq('#', field('name', $.css_name)),
 
-    // ---- attribute list: `(href="/x" onClick={fn} disabled)` ----
-    attributes: ($) => seq('(', repeat(seq($.attribute, optional(','))), ')'),
+    // ---- attribute list: `(href="/x" {...props} disabled)` ----
+    attributes: ($) =>
+      seq(
+        '(',
+        repeat(seq(choice($.attribute, $.spread_attribute), optional(','))),
+        ')'
+      ),
 
     attribute: ($) =>
       seq(
         field('name', $.attribute_name),
         optional(seq('=', field('value', choice($.string, $.expression))))
+      ),
+
+    spread_attribute: ($) =>
+      seq(
+        '{',
+        '...',
+        field('argument', alias($._expression_content, $.expression_body)),
+        '}'
       ),
 
     // ---- if / elseif / else chain ----
@@ -215,6 +230,26 @@ module.exports = grammar({
         optional(field('bindings', $.line_expression)),
         choice($._newline, field('block', $.block))
       ),
+
+    // ---- explicit fragment / raw scoped CSS ----
+    fragment_statement: ($) =>
+      seq('fragment', field('block', $.block)),
+
+    style_statement: ($) =>
+      seq('style', field('body', $.style_block)),
+
+    // CSS is structurally opaque to Beast. Preserve its indentation tree so
+    // the entire block can be injected into the CSS grammar.
+    style_block: ($) =>
+      seq($._newline, $._indent, repeat1($.style_source_statement), $._dedent),
+
+    style_source_statement: ($) =>
+      seq(
+        field('source', $.style_source),
+        choice($._newline, field('continuation', $.style_block))
+      ),
+
+    style_source: ($) => token(prec(-1, /[^\r\n]+/)),
 
     // ---- explicit text-only line: `| some text #{expr}` ----
     text_line: ($) => seq('|', optional(field('text', $.text_content)), $._newline),

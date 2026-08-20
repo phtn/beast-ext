@@ -40,6 +40,10 @@
         {
           "type": "attribute",
           "named": true
+        },
+        {
+          "type": "spread_attribute",
+          "named": true
         }
       ]
     }
@@ -65,7 +69,15 @@
           "named": true
         },
         {
+          "type": "fragment_statement",
+          "named": true
+        },
+        {
           "type": "if_statement",
+          "named": true
+        },
+        {
+          "type": "style_statement",
           "named": true
         },
         {
@@ -172,6 +184,10 @@
           "named": true
         },
         {
+          "type": "fragment_statement",
+          "named": true
+        },
+        {
           "type": "if_statement",
           "named": true
         },
@@ -181,6 +197,10 @@
         },
         {
           "type": "setup_declaration",
+          "named": true
+        },
+        {
+          "type": "style_statement",
           "named": true
         },
         {
@@ -436,6 +456,22 @@
         "types": [
           {
             "type": "expression_body",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "fragment_statement",
+    "named": true,
+    "fields": {
+      "block": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "block",
             "named": true
           }
         ]
@@ -706,6 +742,10 @@
           "named": true
         },
         {
+          "type": "fragment_statement",
+          "named": true
+        },
+        {
           "type": "if_statement",
           "named": true
         },
@@ -723,6 +763,10 @@
         },
         {
           "type": "setup_declaration",
+          "named": true
+        },
+        {
+          "type": "style_statement",
           "named": true
         },
         {
@@ -767,6 +811,22 @@
     }
   },
   {
+    "type": "spread_attribute",
+    "named": true,
+    "fields": {
+      "argument": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "expression_body",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
     "type": "string",
     "named": true,
     "fields": {},
@@ -779,6 +839,68 @@
           "named": true
         }
       ]
+    }
+  },
+  {
+    "type": "style_block",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "style_source_statement",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "style_source",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "style_source_statement",
+    "named": true,
+    "fields": {
+      "continuation": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "style_block",
+            "named": true
+          }
+        ]
+      },
+      "source": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "style_source",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "style_statement",
+    "named": true,
+    "fields": {
+      "body": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "style_block",
+            "named": true
+          }
+        ]
+      }
     }
   },
   {
@@ -937,6 +1059,10 @@
     "named": false
   },
   {
+    "type": "...",
+    "named": false
+  },
+  {
     "type": "=",
     "named": false
   },
@@ -1001,6 +1127,10 @@
     "named": true
   },
   {
+    "type": "fragment",
+    "named": false
+  },
+  {
     "type": "identifier",
     "named": true
   },
@@ -1034,6 +1164,10 @@
   },
   {
     "type": "setup",
+    "named": false
+  },
+  {
+    "type": "style",
     "named": false
   },
   {

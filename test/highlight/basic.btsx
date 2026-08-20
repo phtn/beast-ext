@@ -30,3 +30,11 @@ setup const label = user.name;
 
 Theme.Provider
 // <- constructor
+
+fragment
+// <- keyword
+  article.card({...cardProps})
+//              ^ operator
+  style
+//^ keyword
+    .card { color: rebeccapurple; }
