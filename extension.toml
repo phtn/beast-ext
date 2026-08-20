@@ -1,6 +1,6 @@
 id = "beast"
 name = "Beast"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["phtn"]
 description = "Syntax highlighting for Beast (.btsx) — indentation-first Octane TSRX"
 homepage = "https://github.com/phtn/beast-ext"
@@ -11,4 +11,4 @@ schema_version = 1
 
 [grammars.beast]
 repository = "https://github.com/phtn/beast-ext"
-rev = "efb470eb984ad0d487d2319feb1bfbc063dc36d8"
+rev = "07829c9302d6c3588b7080634d46824bad107fe8"
