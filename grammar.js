@@ -27,16 +27,20 @@ module.exports = grammar({
   conflicts: ($) => [],
 
   rules: {
-    source_file: ($) => seq(optional($._newline), repeat($._top_level_item)),
+    source_file: ($) =>
+      seq(
+        optional($._newline),
+        repeat(choice(prec(1, $._comment_statement), $._declaration)),
+        repeat($._statement)
+      ),
 
-    _top_level_item: ($) =>
+    _declaration: ($) =>
       choice(
         $.import_declaration,
         $.module_declaration,
         $.component_declaration,
         $.props_declaration,
-        $.setup_declaration,
-        $._statement
+        $.setup_declaration
       ),
 
     _statement: ($) =>
@@ -79,9 +83,14 @@ module.exports = grammar({
       seq(
         $._newline,
         $._indent,
-        repeat1(
-          choice($.props_declaration, $.setup_declaration, $._statement)
+        repeat(
+          choice(
+            prec(1, $._comment_statement),
+            $.props_declaration,
+            $.setup_declaration
+          )
         ),
+        repeat1($._statement),
         $._dedent
       ),
 

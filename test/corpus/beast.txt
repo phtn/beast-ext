@@ -678,6 +678,9 @@ Button
 Continuation state inside expressions, templates, source, and styles
 ================================================================================
 
+module
+  const joined = foo
+    ~ + bar;
 div(value={{
   ~ nested: {
   ~ ok: true
@@ -685,9 +688,6 @@ div(value={{
   ~ }})
 p #{`hello
   ~ world`}
-module
-  const joined = foo
-    ~ + bar;
 style
   .continued {
     ~ color: red;
@@ -696,6 +696,12 @@ style
 --------------------------------------------------------------------------------
 
 (source_file
+  (module_declaration
+    (source_block
+      (source_statement
+        (continued_source_code
+          (source_code)
+          (source_code)))))
   (element
     (selector
       (tag_name))
@@ -717,12 +723,6 @@ style
         (expression_body
           (expression_fragment)
           (expression_fragment)))))
-  (module_declaration
-    (source_block
-      (source_statement
-        (continued_source_code
-          (source_code)
-          (source_code)))))
   (style_statement
     (style_block
       (style_source_statement

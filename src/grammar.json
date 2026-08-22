@@ -21,13 +21,33 @@
         {
           "type": "REPEAT",
           "content": {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "PREC",
+                "value": 1,
+                "content": {
+                  "type": "SYMBOL",
+                  "name": "_comment_statement"
+                }
+              },
+              {
+                "type": "SYMBOL",
+                "name": "_declaration"
+              }
+            ]
+          }
+        },
+        {
+          "type": "REPEAT",
+          "content": {
             "type": "SYMBOL",
-            "name": "_top_level_item"
+            "name": "_statement"
           }
         }
       ]
     },
-    "_top_level_item": {
+    "_declaration": {
       "type": "CHOICE",
       "members": [
         {
@@ -49,10 +69,6 @@
         {
           "type": "SYMBOL",
           "name": "setup_declaration"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "_statement"
         }
       ]
     },
@@ -223,10 +239,18 @@
           "name": "_indent"
         },
         {
-          "type": "REPEAT1",
+          "type": "REPEAT",
           "content": {
             "type": "CHOICE",
             "members": [
+              {
+                "type": "PREC",
+                "value": 1,
+                "content": {
+                  "type": "SYMBOL",
+                  "name": "_comment_statement"
+                }
+              },
               {
                 "type": "SYMBOL",
                 "name": "props_declaration"
@@ -234,12 +258,15 @@
               {
                 "type": "SYMBOL",
                 "name": "setup_declaration"
-              },
-              {
-                "type": "SYMBOL",
-                "name": "_statement"
               }
             ]
+          }
+        },
+        {
+          "type": "REPEAT1",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_statement"
           }
         },
         {
