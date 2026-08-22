@@ -89,4 +89,5 @@
   (source_code)
   (style_source)
   (line_expression)
+  (expression_fragment)
 ] @embedded

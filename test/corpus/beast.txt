@@ -33,7 +33,8 @@ Nested elements and control flow
             (text_content
               (text_fragment)
               (interpolation
-                (expression_body))))))
+                (expression_body
+                  (expression_fragment)))))))
       (element
         (selector
           (class_selector
@@ -41,7 +42,8 @@ Nested elements and control flow
         (block
           (if_statement
             (if_clause
-              (line_expression)
+              (continued_line_expression
+                (line_expression))
               (block
                 (element
                   (selector
@@ -50,9 +52,11 @@ Nested elements and control flow
                     (attribute
                       (attribute_name)
                       (expression
-                        (expression_body)))))))
+                        (expression_body
+                          (expression_fragment))))))))
             (elseif_clause
-              (line_expression)
+              (continued_line_expression
+                (line_expression))
               (block
                 (text_line
                   (text_content
@@ -62,7 +66,8 @@ Nested elements and control flow
                 (each_statement
                   (identifier)
                   (identifier)
-                  (line_expression)
+                  (continued_each_iterable
+                    (line_expression))
                   (block
                     (element
                       (selector
@@ -73,10 +78,12 @@ Nested elements and control flow
                         (attribute
                           (attribute_name)
                           (expression
-                            (expression_body))))
+                            (expression_body
+                              (expression_fragment)))))
                       (text_content
                         (interpolation
-                          (expression_body))))))))))))))
+                          (expression_body
+                            (expression_fragment)))))))))))))))
 
 ================================================================================
 Comments and blank lines
@@ -145,42 +152,48 @@ div(onClick={() => {}} empty={{}}) Empty braces
     (text_content
       (text_fragment)
       (interpolation
-        (expression_body))))
+        (expression_body
+          (expression_fragment)))))
   (element
     (selector
       (tag_name))
     (text_content
       (text_fragment)
       (interpolation
-        (expression_body))))
+        (expression_body
+          (expression_fragment)))))
   (element
     (selector
       (tag_name))
     (text_content
       (text_fragment)
       (interpolation
-        (expression_body))))
+        (expression_body
+          (expression_fragment)))))
   (element
     (selector
       (tag_name))
     (text_content
       (text_fragment)
       (interpolation
-        (expression_body))))
+        (expression_body
+          (expression_fragment)))))
   (element
     (selector
       (tag_name))
     (text_content
       (text_fragment)
       (interpolation
-        (expression_body))))
+        (expression_body
+          (expression_fragment)))))
   (element
     (selector
       (tag_name))
     (text_content
       (text_fragment)
       (interpolation
-        (expression_body))))
+        (expression_body
+          (expression_fragment)))))
   (element
     (selector
       (tag_name))
@@ -188,11 +201,13 @@ div(onClick={() => {}} empty={{}}) Empty braces
       (attribute
         (attribute_name)
         (expression
-          (expression_body)))
+          (expression_body
+            (expression_fragment))))
       (attribute
         (attribute_name)
         (expression
-          (expression_body))))
+          (expression_body
+            (expression_fragment)))))
     (text_content
       (text_fragment))))
 
@@ -229,7 +244,8 @@ App#root.shell(enabled)
             (text_content
               (text_fragment)
               (interpolation
-                (expression_body)))))))))
+                (expression_body
+                  (expression_fragment))))))))))
 
 ================================================================================
 Compiler declarations and Octane control flow
@@ -268,30 +284,38 @@ Theme.Provider(value={status})
 
 (source_file
   (import_declaration
-    (line_expression))
+    (continued_line_expression
+      (line_expression)))
   (module_declaration
     (source_block
       (source_statement
-        (source_code))
+        (continued_source_code
+          (source_code)))
       (source_statement
-        (source_code))))
+        (continued_source_code
+          (source_code)))))
   (component_declaration
     (component_name)
     (component_block
       (props_declaration
-        (line_expression))
+        (continued_line_expression
+          (line_expression)))
       (setup_declaration
-        (source_code))
+        (continued_source_code
+          (source_code)))
       (element
         (selector
           (tag_name))
         (text_content
           (interpolation
-            (expression_body))))))
+            (expression_body
+              (expression_fragment)))))))
   (props_declaration
-    (line_expression))
+    (continued_line_expression
+      (line_expression)))
   (setup_declaration
-    (source_code))
+    (continued_source_code
+      (source_code)))
   (element
     (selector
       (component_name)
@@ -301,13 +325,16 @@ Theme.Provider(value={status})
       (attribute
         (attribute_name)
         (expression
-          (expression_body))))
+          (expression_body
+            (expression_fragment)))))
     (block
       (each_statement
         (identifier)
         (identifier)
-        (line_expression)
-        (line_expression)
+        (continued_each_iterable
+          (line_expression))
+        (continued_line_expression
+          (line_expression))
         (block
           (element
             (selector
@@ -318,10 +345,12 @@ Theme.Provider(value={status})
               (attribute
                 (attribute_name)
                 (expression
-                  (expression_body))))
+                  (expression_body
+                    (expression_fragment)))))
             (text_content
               (interpolation
-                (expression_body)))))
+                (expression_body
+                  (expression_fragment))))))
         (empty_clause
           (block
             (element
@@ -331,23 +360,29 @@ Theme.Provider(value={status})
                 (attribute
                   (attribute_name)
                   (expression
-                    (expression_body))))))))
+                    (expression_body
+                      (expression_fragment)))))))))
       (each_statement
         (identifier)
-        (line_expression)
-        (line_expression)
+        (continued_each_iterable
+          (line_expression))
+        (continued_line_expression
+          (line_expression))
         (block
           (element
             (selector
               (tag_name))
             (text_content
               (interpolation
-                (expression_body))))))
+                (expression_body
+                  (expression_fragment)))))))
       (switch_statement
-        (line_expression)
+        (continued_line_expression
+          (line_expression))
         (switch_block
           (case_clause
-            (line_expression)
+            (continued_line_expression
+              (line_expression))
             (block
               (element
                 (selector
@@ -367,7 +402,8 @@ Theme.Provider(value={status})
                 (attribute
                   (attribute_name)
                   (expression
-                    (expression_body)))))))
+                    (expression_body
+                      (expression_fragment))))))))
         (pending_clause
           (block
             (element
@@ -376,7 +412,8 @@ Theme.Provider(value={status})
               (text_content
                 (text_fragment)))))
         (catch_clause
-          (line_expression)
+          (continued_line_expression
+            (line_expression))
           (block
             (element
               (selector
@@ -385,10 +422,12 @@ Theme.Provider(value={status})
                 (attribute
                   (attribute_name)
                   (expression
-                    (expression_body))))
+                    (expression_body
+                      (expression_fragment)))))
               (text_content
                 (interpolation
-                  (expression_body))))))))))
+                  (expression_body
+                    (expression_fragment)))))))))))
 
 ================================================================================
 Fragments, spread attributes, and scoped styles
@@ -417,7 +456,8 @@ fragment
             (attribute_name)
             (string))
           (spread_attribute
-            (expression_body))
+            (expression_body
+              (expression_fragment)))
           (attribute
             (attribute_name)))
         (block
@@ -429,9 +469,281 @@ fragment
       (style_statement
         (style_block
           (style_source_statement
-            (style_source)
+            (continued_style_source
+              (style_source))
             (style_block
               (style_source_statement
-                (style_source))))
+                (continued_style_source
+                  (style_source)))))
           (style_source_statement
-            (style_source)))))))
+            (continued_style_source
+              (style_source))))))))
+
+================================================================================
+Continuation headers, sources, and embedded expressions
+================================================================================
+
+import {
+  ~ Foo,
+  ~ Bar
+  ~ } from "./types"
+setup const total = foo
+  ~ + bar
+Button(items={[
+  ~ 0, 1, 2, 3
+  ~ ]}
+  ~ ) Save
+if isReady
+  ~ && hasPermission
+  p Ready
+if isEnabled
+  // removed before continuation processing
+
+  // also removed
+  ~ && isAllowed
+  p Allowed
+each item in items
+  ~ key item.id
+  li #{item.label}
+each item in items
+  ~ .filter(Boolean)
+  ~ key item
+  ~ .id
+  li #{item.label}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (import_declaration
+    (continued_line_expression
+      (line_expression)
+      (line_expression)
+      (line_expression)
+      (line_expression)))
+  (setup_declaration
+    (continued_source_code
+      (source_code)
+      (source_code)))
+  (element
+    (selector
+      (component_name))
+    (attributes
+      (attribute
+        (attribute_name)
+        (expression
+          (expression_body
+            (expression_fragment)
+            (expression_fragment)
+            (expression_fragment)))))
+    (text_content
+      (text_fragment)))
+  (if_statement
+    (if_clause
+      (continued_line_expression
+        (line_expression)
+        (line_expression))
+      (block
+        (element
+          (selector
+            (tag_name))
+          (text_content
+            (text_fragment))))))
+  (if_statement
+    (if_clause
+      (continued_line_expression
+        (line_expression)
+        (line_expression))
+      (block
+        (element
+          (selector
+            (tag_name))
+          (text_content
+            (text_fragment))))))
+  (each_statement
+    (identifier)
+    (continued_each_iterable
+      (line_expression))
+    (continued_line_expression
+      (line_expression))
+    (block
+      (element
+        (selector
+          (tag_name))
+        (text_content
+          (interpolation
+            (expression_body
+              (expression_fragment)))))))
+  (each_statement
+    (identifier)
+    (continued_each_iterable
+      (line_expression)
+      (line_expression))
+    (continued_line_expression
+      (line_expression)
+      (line_expression))
+    (block
+      (element
+        (selector
+          (tag_name))
+        (text_content
+          (interpolation
+            (expression_body
+              (expression_fragment))))))))
+
+================================================================================
+Continuation no-ops, text, slash payloads, and token boundaries
+================================================================================
+
+div(className='')
+  ~ // comment continuation
+  ~
+  p Still a child
+Button(
+  ~ tone="primary"
+  ~ // ignored
+  ~ disabled
+  ~
+  ~ ) Save
+p path
+  ~ /continued
+p Hello
+  // removed before continuation processing
+  ~ world
+if value
+  ~ /x/.test(input)
+  p Match
+Button
+  ~ (disabled) Save
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (element
+    (selector
+      (tag_name))
+    (attributes
+      (attribute
+        (attribute_name)
+        (string)))
+    (block
+      (element
+        (selector
+          (tag_name))
+        (text_content
+          (text_fragment)))))
+  (element
+    (selector
+      (component_name))
+    (attributes
+      (attribute
+        (attribute_name)
+        (string))
+      (attribute
+        (attribute_name)))
+    (text_content
+      (text_fragment)))
+  (element
+    (selector
+      (tag_name))
+    (text_content
+      (text_fragment)
+      (text_fragment)))
+  (element
+    (selector
+      (tag_name))
+    (text_content
+      (text_fragment)
+      (text_fragment)))
+  (if_statement
+    (if_clause
+      (continued_line_expression
+        (line_expression)
+        (line_expression))
+      (block
+        (element
+          (selector
+            (tag_name))
+          (text_content
+            (text_fragment))))))
+  (element
+    (selector
+      (component_name))
+    (attributes
+      (attribute
+        (attribute_name)))
+    (text_content
+      (text_fragment))))
+
+================================================================================
+Continuation state inside expressions, templates, source, and styles
+================================================================================
+
+div(value={{
+  ~ nested: {
+  ~ ok: true
+  ~ }
+  ~ }})
+p #{`hello
+  ~ world`}
+module
+  const joined = foo
+    ~ + bar;
+style
+  .continued {
+    ~ color: red;
+    ~ }
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (element
+    (selector
+      (tag_name))
+    (attributes
+      (attribute
+        (attribute_name)
+        (expression
+          (expression_body
+            (expression_fragment)
+            (expression_fragment)
+            (expression_fragment)
+            (expression_fragment)
+            (expression_fragment))))))
+  (element
+    (selector
+      (tag_name))
+    (text_content
+      (interpolation
+        (expression_body
+          (expression_fragment)
+          (expression_fragment)))))
+  (module_declaration
+    (source_block
+      (source_statement
+        (continued_source_code
+          (source_code)
+          (source_code)))))
+  (style_statement
+    (style_block
+      (style_source_statement
+        (continued_style_source
+          (style_source)
+          (style_source)
+          (style_source))))))
+
+================================================================================
+Inline continuation markers remain errors
+================================================================================
+
+Button(~disabled)
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (element
+    (selector
+      (component_name))
+    (attributes
+      (ERROR
+        (UNEXPECTED '~')
+        (identifier)))))

@@ -10,19 +10,23 @@
   item: (identifier) @name) @item
 
 (if_clause
-  condition: (line_expression) @name) @item
+  condition: (continued_line_expression
+    . (line_expression) @name)) @item
 
 (elseif_clause
-  condition: (line_expression) @name) @item
+  condition: (continued_line_expression
+    . (line_expression) @name)) @item
 
 (else_clause
   "else" @name) @item
 
 (switch_statement
-  discriminant: (line_expression) @name) @item
+  discriminant: (continued_line_expression
+    . (line_expression) @name)) @item
 
 (case_clause
-  condition: (line_expression) @name) @item
+  condition: (continued_line_expression
+    . (line_expression) @name)) @item
 
 (default_clause
   "default" @name) @item

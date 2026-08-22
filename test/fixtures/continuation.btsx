@@ -1,0 +1,81 @@
+import {
+  ~ Foo,
+  ~ Bar
+  ~ } from "./types"
+props { foo,
+  ~ bar
+  ~ }: Props
+setup const total = foo
+  ~ + bar
+
+Button(items={[
+  ~ 0, 1, 2, 3
+  ~ ]}
+  ~ ) Save
+
+if isReady
+  ~ && hasPermission
+  p Ready
+if isEnabled
+  // removed before continuation processing
+
+  // also removed
+  ~ && isAllowed
+  p Allowed
+
+each item in items
+  ~ key item.id
+  li #{item.label}
+each item in items
+  ~ .filter(Boolean)
+  ~ key item
+  ~ .id
+  li #{item.label}
+
+div(className='')
+  ~ // comment continuation
+  ~
+  p Still a child of the div
+
+Button(
+  ~ tone="primary"
+  ~ // ignored
+  ~ disabled
+  ~
+  ~ ) Save
+
+p path
+  ~ /continued
+p Hello
+  // removed before continuation processing
+  ~ world
+if value
+  ~ /x/.test(input)
+  p Match
+
+p Result: #{value
+  ~ + fallback}
+
+Button
+  ~ (disabled) Save
+
+div(value={{
+  ~ nested: {
+  ~ ok: true
+  ~ }
+  ~ }})
+p #{`hello
+  ~ world`}
+
+module
+  const joined = foo
+    ~ + bar;
+setup
+  const nested = {
+    ~ value: total
+    ~ };
+
+style
+  .continued {
+    ~ color: red;
+    ~ }

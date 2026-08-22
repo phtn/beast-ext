@@ -114,7 +114,7 @@
         "required": true,
         "types": [
           {
-            "type": "line_expression",
+            "type": "continued_line_expression",
             "named": true
           }
         ]
@@ -130,7 +130,7 @@
         "required": false,
         "types": [
           {
-            "type": "line_expression",
+            "type": "continued_line_expression",
             "named": true
           }
         ]
@@ -261,6 +261,66 @@
     }
   },
   {
+    "type": "continued_each_iterable",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "line_expression",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "continued_line_expression",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "line_expression",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "continued_source_code",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "source_code",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "continued_style_source",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "style_source",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "default_clause",
     "named": true,
     "fields": {
@@ -325,7 +385,7 @@
         "required": true,
         "types": [
           {
-            "type": "line_expression",
+            "type": "continued_each_iterable",
             "named": true
           }
         ]
@@ -335,7 +395,7 @@
         "required": false,
         "types": [
           {
-            "type": "line_expression",
+            "type": "continued_line_expression",
             "named": true
           }
         ]
@@ -423,7 +483,7 @@
         "required": true,
         "types": [
           {
-            "type": "line_expression",
+            "type": "continued_line_expression",
             "named": true
           }
         ]
@@ -460,6 +520,21 @@
           }
         ]
       }
+    }
+  },
+  {
+    "type": "expression_body",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "expression_fragment",
+          "named": true
+        }
+      ]
     }
   },
   {
@@ -513,7 +588,7 @@
         "required": true,
         "types": [
           {
-            "type": "line_expression",
+            "type": "continued_line_expression",
             "named": true
           }
         ]
@@ -552,7 +627,7 @@
         "required": true,
         "types": [
           {
-            "type": "line_expression",
+            "type": "continued_line_expression",
             "named": true
           }
         ]
@@ -589,11 +664,11 @@
         "required": true,
         "types": [
           {
-            "type": "source_block",
+            "type": "continued_source_code",
             "named": true
           },
           {
-            "type": "source_code",
+            "type": "source_block",
             "named": true
           }
         ]
@@ -625,7 +700,7 @@
         "required": true,
         "types": [
           {
-            "type": "line_expression",
+            "type": "continued_line_expression",
             "named": true
           }
         ]
@@ -685,11 +760,11 @@
         "required": true,
         "types": [
           {
-            "type": "source_block",
+            "type": "continued_source_code",
             "named": true
           },
           {
-            "type": "source_code",
+            "type": "source_block",
             "named": true
           }
         ]
@@ -803,7 +878,7 @@
         "required": true,
         "types": [
           {
-            "type": "source_code",
+            "type": "continued_source_code",
             "named": true
           }
         ]
@@ -880,7 +955,7 @@
         "required": true,
         "types": [
           {
-            "type": "style_source",
+            "type": "continued_style_source",
             "named": true
           }
         ]
@@ -945,7 +1020,7 @@
         "required": true,
         "types": [
           {
-            "type": "line_expression",
+            "type": "continued_line_expression",
             "named": true
           }
         ]
@@ -1123,7 +1198,7 @@
     "named": true
   },
   {
-    "type": "expression_body",
+    "type": "expression_fragment",
     "named": true
   },
   {

@@ -138,7 +138,7 @@
           "name": "source",
           "content": {
             "type": "SYMBOL",
-            "name": "line_expression"
+            "name": "continued_line_expression"
           }
         },
         {
@@ -165,7 +165,7 @@
                   "name": "source",
                   "content": {
                     "type": "SYMBOL",
-                    "name": "source_code"
+                    "name": "continued_source_code"
                   }
                 },
                 {
@@ -260,7 +260,7 @@
           "name": "parameter",
           "content": {
             "type": "SYMBOL",
-            "name": "line_expression"
+            "name": "continued_line_expression"
           }
         },
         {
@@ -287,7 +287,7 @@
                   "name": "source",
                   "content": {
                     "type": "SYMBOL",
-                    "name": "source_code"
+                    "name": "continued_source_code"
                   }
                 },
                 {
@@ -340,7 +340,7 @@
           "name": "source",
           "content": {
             "type": "SYMBOL",
-            "name": "source_code"
+            "name": "continued_source_code"
           }
         },
         {
@@ -361,6 +361,13 @@
           ]
         }
       ]
+    },
+    "continued_source_code": {
+      "type": "REPEAT1",
+      "content": {
+        "type": "SYMBOL",
+        "name": "source_code"
+      }
     },
     "source_code": {
       "type": "TOKEN",
@@ -684,13 +691,8 @@
           "type": "FIELD",
           "name": "argument",
           "content": {
-            "type": "ALIAS",
-            "content": {
-              "type": "SYMBOL",
-              "name": "_expression_content"
-            },
-            "named": true,
-            "value": "expression_body"
+            "type": "SYMBOL",
+            "name": "expression_body"
           }
         },
         {
@@ -739,7 +741,7 @@
           "name": "condition",
           "content": {
             "type": "SYMBOL",
-            "name": "line_expression"
+            "name": "continued_line_expression"
           }
         },
         {
@@ -773,7 +775,7 @@
           "name": "condition",
           "content": {
             "type": "SYMBOL",
-            "name": "line_expression"
+            "name": "continued_line_expression"
           }
         },
         {
@@ -869,13 +871,8 @@
           "type": "FIELD",
           "name": "iterable",
           "content": {
-            "type": "ALIAS",
-            "content": {
-              "type": "SYMBOL",
-              "name": "_each_iterable"
-            },
-            "named": true,
-            "value": "line_expression"
+            "type": "SYMBOL",
+            "name": "continued_each_iterable"
           }
         },
         {
@@ -893,7 +890,7 @@
                   "name": "key",
                   "content": {
                     "type": "SYMBOL",
-                    "name": "line_expression"
+                    "name": "continued_line_expression"
                   }
                 }
               ]
@@ -976,7 +973,7 @@
           "name": "discriminant",
           "content": {
             "type": "SYMBOL",
-            "name": "line_expression"
+            "name": "continued_line_expression"
           }
         },
         {
@@ -1038,7 +1035,7 @@
           "name": "condition",
           "content": {
             "type": "SYMBOL",
-            "name": "line_expression"
+            "name": "continued_line_expression"
           }
         },
         {
@@ -1192,7 +1189,7 @@
               "name": "bindings",
               "content": {
                 "type": "SYMBOL",
-                "name": "line_expression"
+                "name": "continued_line_expression"
               }
             },
             {
@@ -1285,7 +1282,7 @@
           "name": "source",
           "content": {
             "type": "SYMBOL",
-            "name": "style_source"
+            "name": "continued_style_source"
           }
         },
         {
@@ -1306,6 +1303,13 @@
           ]
         }
       ]
+    },
+    "continued_style_source": {
+      "type": "REPEAT1",
+      "content": {
+        "type": "SYMBOL",
+        "name": "style_source"
+      }
     },
     "style_source": {
       "type": "TOKEN",
@@ -1412,13 +1416,8 @@
               "type": "FIELD",
               "name": "body",
               "content": {
-                "type": "ALIAS",
-                "content": {
-                  "type": "SYMBOL",
-                  "name": "_expression_content"
-                },
-                "named": true,
-                "value": "expression_body"
+                "type": "SYMBOL",
+                "name": "expression_body"
               }
             },
             {
@@ -1446,13 +1445,8 @@
               "type": "FIELD",
               "name": "body",
               "content": {
-                "type": "ALIAS",
-                "content": {
-                  "type": "SYMBOL",
-                  "name": "_expression_content"
-                },
-                "named": true,
-                "value": "expression_body"
+                "type": "SYMBOL",
+                "name": "expression_body"
               }
             },
             {
@@ -1465,6 +1459,51 @@
           "value": "}"
         }
       ]
+    },
+    "continued_each_iterable": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_each_iterable"
+          },
+          "named": true,
+          "value": "line_expression"
+        },
+        {
+          "type": "REPEAT",
+          "content": {
+            "type": "ALIAS",
+            "content": {
+              "type": "SYMBOL",
+              "name": "_each_iterable_continuation"
+            },
+            "named": true,
+            "value": "line_expression"
+          }
+        }
+      ]
+    },
+    "continued_line_expression": {
+      "type": "REPEAT1",
+      "content": {
+        "type": "SYMBOL",
+        "name": "line_expression"
+      }
+    },
+    "expression_body": {
+      "type": "REPEAT1",
+      "content": {
+        "type": "ALIAS",
+        "content": {
+          "type": "SYMBOL",
+          "name": "_expression_content"
+        },
+        "named": true,
+        "value": "expression_fragment"
+      }
     },
     "line_expression": {
       "type": "TOKEN",
@@ -1592,6 +1631,10 @@
     {
       "type": "PATTERN",
       "value": "[ \\t]"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "_continuation"
     }
   ],
   "conflicts": [],
@@ -1620,6 +1663,14 @@
     {
       "type": "SYMBOL",
       "name": "_each_iterable"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "_each_iterable_continuation"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "_continuation"
     }
   ],
   "inline": [],

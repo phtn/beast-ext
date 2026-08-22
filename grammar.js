@@ -4,11 +4,10 @@
 module.exports = grammar({
   name: 'beast',
 
-  // Only horizontal whitespace is auto-skipped between tokens. Newlines
-  // and indentation are meaningful and handled explicitly by the external
-  // scanner (src/scanner.c), which emits _newline / _indent / _dedent based
-  // on each line's leading-space column.
-  extras: ($) => [/[ \t]/],
+  // Horizontal whitespace and `~` continuation prefixes are auto-skipped.
+  // Ordinary newlines and indentation remain meaningful and are emitted by
+  // the external scanner based on each line's leading-space column.
+  extras: ($) => [/[ \t]/, $._continuation],
 
   externals: ($) =>
     [
@@ -17,7 +16,9 @@ module.exports = grammar({
       $._dedent,
       $._error_sentinel,
       $._expression_content,
-      $._each_iterable
+      $._each_iterable,
+      $._each_iterable_continuation,
+      $._continuation
     ],
 
   // Prefer Beast's literal keywords over JavaScript-compatible identifiers.
@@ -56,13 +57,13 @@ module.exports = grammar({
 
     // ---- source declarations: module/import/component/props/setup ----
     import_declaration: ($) =>
-      seq('import', field('source', $.line_expression), $._newline),
+      seq('import', field('source', $.continued_line_expression), $._newline),
 
     module_declaration: ($) =>
       seq(
         'module',
         choice(
-          seq(field('source', $.source_code), $._newline),
+          seq(field('source', $.continued_source_code), $._newline),
           field('source', $.source_block)
         )
       ),
@@ -85,13 +86,13 @@ module.exports = grammar({
       ),
 
     props_declaration: ($) =>
-      seq('props', field('parameter', $.line_expression), $._newline),
+      seq('props', field('parameter', $.continued_line_expression), $._newline),
 
     setup_declaration: ($) =>
       seq(
         'setup',
         choice(
-          seq(field('source', $.source_code), $._newline),
+          seq(field('source', $.continued_source_code), $._newline),
           field('source', $.source_block)
         )
       ),
@@ -104,10 +105,11 @@ module.exports = grammar({
 
     source_statement: ($) =>
       seq(
-        field('source', $.source_code),
+        field('source', $.continued_source_code),
         choice($._newline, field('continuation', $.source_block))
       ),
 
+    continued_source_code: ($) => repeat1($.source_code),
     source_code: ($) => token(prec(-1, /[^\r\n]+/)),
 
     // ---- element lines: `.card`, `#main.wrap`, `Button(...) label` ----
@@ -155,7 +157,7 @@ module.exports = grammar({
       seq(
         '{',
         '...',
-        field('argument', alias($._expression_content, $.expression_body)),
+        field('argument', $.expression_body),
         '}'
       ),
 
@@ -163,12 +165,12 @@ module.exports = grammar({
     if_statement: ($) => seq($.if_clause, repeat($.elseif_clause), optional($.else_clause)),
 
     if_clause: ($) =>
-      seq('if', field('condition', $.line_expression), choice($._newline, field('block', $.block))),
+      seq('if', field('condition', $.continued_line_expression), choice($._newline, field('block', $.block))),
 
     elseif_clause: ($) =>
       seq(
         'elseif',
-        field('condition', $.line_expression),
+        field('condition', $.continued_line_expression),
         choice($._newline, field('block', $.block))
       ),
 
@@ -181,8 +183,8 @@ module.exports = grammar({
         field('item', $.identifier),
         optional(seq(',', field('index', $.identifier))),
         'in',
-        field('iterable', alias($._each_iterable, $.line_expression)),
-        optional(seq('key', field('key', $.line_expression))),
+        field('iterable', $.continued_each_iterable),
+        optional(seq('key', field('key', $.continued_line_expression))),
         choice($._newline, field('block', $.block)),
         optional(field('empty', $.empty_clause))
       ),
@@ -193,7 +195,7 @@ module.exports = grammar({
     switch_statement: ($) =>
       seq(
         'switch',
-        field('discriminant', $.line_expression),
+        field('discriminant', $.continued_line_expression),
         field('body', $.switch_block)
       ),
 
@@ -206,7 +208,7 @@ module.exports = grammar({
       ),
 
     case_clause: ($) =>
-      seq('case', field('condition', $.line_expression), choice($._newline, field('block', $.block))),
+      seq('case', field('condition', $.continued_line_expression), choice($._newline, field('block', $.block))),
 
     default_clause: ($) => seq('default', choice($._newline, field('block', $.block))),
 
@@ -227,7 +229,7 @@ module.exports = grammar({
     catch_clause: ($) =>
       seq(
         'catch',
-        optional(field('bindings', $.line_expression)),
+        optional(field('bindings', $.continued_line_expression)),
         choice($._newline, field('block', $.block))
       ),
 
@@ -245,10 +247,11 @@ module.exports = grammar({
 
     style_source_statement: ($) =>
       seq(
-        field('source', $.style_source),
+        field('source', $.continued_style_source),
         choice($._newline, field('continuation', $.style_block))
       ),
 
+    continued_style_source: ($) => repeat1($.style_source),
     style_source: ($) => token(prec(-1, /[^\r\n]+/)),
 
     // ---- explicit text-only line: `| some text #{expr}` ----
@@ -264,19 +267,26 @@ module.exports = grammar({
     interpolation: ($) =>
       seq(
         '#{',
-        optional(field('body', alias($._expression_content, $.expression_body))),
+        optional(field('body', $.expression_body)),
         '}'
       ),
 
     expression: ($) =>
       seq(
         '{',
-        optional(field('body', alias($._expression_content, $.expression_body))),
+        optional(field('body', $.expression_body)),
         '}'
       ),
 
     // Rest-of-line raw expression/source text. JavaScript and TypeScript
     // structure within these slices is delegated to injections.scm.
+    continued_each_iterable: ($) =>
+      seq(
+        alias($._each_iterable, $.line_expression),
+        repeat(alias($._each_iterable_continuation, $.line_expression))
+      ),
+    continued_line_expression: ($) => repeat1($.line_expression),
+    expression_body: ($) => repeat1(alias($._expression_content, $.expression_fragment)),
     line_expression: ($) => token(prec(-1, /[^\r\n]+/)),
 
     string: ($) =>
