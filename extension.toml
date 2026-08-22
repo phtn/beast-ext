@@ -1,6 +1,6 @@
 id = "beast"
 name = "Beast"
-version = "0.2.0"
+version = "0.3.0"
 authors = ["phtn"]
 description = "Syntax highlighting for Beast (.btsx) — indentation-first Octane TSRX"
 homepage = "https://github.com/phtn/beast-ext"
@@ -11,4 +11,11 @@ schema_version = 1
 
 [grammars.beast]
 repository = "https://github.com/phtn/beast-ext"
-rev = "29fa8f6b628e806e974dffdce4ca1b3a22cba97b"
+rev = "1d204c7df940b60ba1964e894fadab35ee0a515f"
+
+[language_servers.beast-language-server]
+name = "Beast Language Server"
+languages = ["Beast"]
+
+[language_servers.beast-language-server.language_ids]
+Beast = "beast"

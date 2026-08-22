@@ -1,0 +1,14 @@
+[package]
+name = "beast"
+version = "0.3.0"
+edition = "2021"
+description = "Beast language support for Zed"
+authors = ["phtn"]
+repository = "https://github.com/phtn/beast-ext"
+license = "MIT"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+zed_extension_api = "0.7.0"

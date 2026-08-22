@@ -1,3 +1,5 @@
 node_modules/
 /tmp/
+/target/
+/extension.wasm
 grammars/beast/
