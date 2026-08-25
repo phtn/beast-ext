@@ -1,5 +1,13 @@
 node_modules/
+.env
+.env.*
+!.env.example
 /tmp/
 /target/
 /extension.wasm
+/dist/
+/*.vsix
 grammars/beast/
+
+.env
+.env.local

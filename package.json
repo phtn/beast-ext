@@ -1,11 +1,109 @@
 {
-  "name": "beast-ext",
+  "name": "beastjs",
+  "displayName": "BeastJS",
   "version": "0.3.0",
-  "description": "Beast (.btsx) Zed extension grammar",
+  "description": "Language support for Beast (.btsx), the indentation-first component language for Octane TSRX.",
+  "publisher": "phtn",
+  "author": {
+    "name": "phtn"
+  },
   "license": "MIT",
   "private": true,
+  "homepage": "https://github.com/phtn/beast-ext#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/phtn/beast-ext.git"
+  },
+  "bugs": {
+    "url": "https://github.com/phtn/beast-ext/issues"
+  },
+  "icon": "images/icon.png",
+  "galleryBanner": {
+    "color": "#111827",
+    "theme": "dark"
+  },
+  "pricing": "Free",
+  "categories": [
+    "Programming Languages",
+    "Linters"
+  ],
+  "keywords": [
+    "beast",
+    "btsx",
+    "tsrx",
+    "octane",
+    "components",
+    "language-server"
+  ],
+  "engines": {
+    "vscode": "^1.91.0"
+  },
+  "extensionKind": [
+    "workspace"
+  ],
+  "main": "./dist/extension.cjs",
+  "activationEvents": [
+    "onLanguage:beast"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "beast",
+        "aliases": [
+          "Beast",
+          "BTSX"
+        ],
+        "extensions": [
+          ".btsx"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "beast",
+        "scopeName": "source.beast",
+        "path": "./syntaxes/beast.tmLanguage.json",
+        "embeddedLanguages": {
+          "meta.embedded.block.typescript": "typescript",
+          "meta.embedded.inline.typescript": "typescript",
+          "meta.embedded.block.css": "css"
+        }
+      }
+    ],
+    "commands": [
+      {
+        "command": "beast.restartLanguageServer",
+        "title": "Restart Language Server",
+        "category": "Beast"
+      }
+    ],
+    "configuration": {
+      "title": "Beast",
+      "properties": {
+        "beast.trace.server": {
+          "type": "string",
+          "scope": "window",
+          "enum": [
+            "off",
+            "messages",
+            "verbose"
+          ],
+          "default": "off",
+          "description": "Traces communication between VS Code and the Beast language server."
+        }
+      }
+    }
+  },
   "scripts": {
-    "test": "sh scripts/verify.sh",
+    "test": "npm run test:zed && npm run check:vscode",
+    "test:zed": "sh scripts/verify.sh",
+    "check:vscode": "tsc --noEmit && node scripts/validate-vscode.mjs && npm run build:vscode && node scripts/smoke-vscode-server.mjs && vsce ls --tree",
+    "build:vscode": "npm run build:vscode:client && npm run build:vscode:server",
+    "build:vscode:client": "esbuild src/vscode-extension.ts --bundle --platform=node --target=node20 --format=cjs --external:vscode --outfile=dist/extension.cjs",
+    "build:vscode:server": "esbuild node_modules/beast-language-server/dist/server.js --bundle --platform=node --target=node20 --format=cjs --outfile=dist/server.cjs",
+    "vscode:prepublish": "npm run build:vscode",
+    "package:vsix": "vsce package",
     "generate": "tree-sitter generate",
     "parse": "tree-sitter parse",
     "highlight": "tree-sitter highlight",
@@ -15,9 +113,21 @@
   },
   "devDependencies": {
     "@taplo/cli": "^0.7.0",
-    "tree-sitter-cli": "^0.26.12"
+    "@types/node": "^24.0.0",
+    "@types/vscode": "^1.91.0",
+    "@vscode/vsce": "^3.9.2",
+    "beast-language-server": "0.1.0",
+    "esbuild": "^0.28.2",
+    "tree-sitter-cli": "^0.26.12",
+    "typescript": "^7.0.2",
+    "vscode-oniguruma": "^2.0.1",
+    "vscode-textmate": "^9.2.1",
+    "vscode-languageclient": "^10.1.0"
   },
   "allowScripts": {
+    "@vscode/vsce-sign@2.1.0": true,
+    "esbuild@0.28.2": true,
+    "keytar@7.9.0": true,
     "tree-sitter-cli@0.26.12": true
   }
 }

@@ -1,0 +1,189 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Beast",
+  "scopeName": "source.beast",
+  "fileTypes": ["btsx"],
+  "patterns": [
+    { "include": "#comments" },
+    { "include": "#styleBlock" },
+    { "include": "#typescriptBlock" },
+    { "include": "#typescriptLine" },
+    { "include": "#componentDeclaration" },
+    { "include": "#controlFlow" },
+    { "include": "#pipeText" },
+    { "include": "#interpolation" },
+    { "include": "#selector" },
+    { "include": "#attributes" },
+    { "include": "#strings" }
+  ],
+  "repository": {
+    "comments": {
+      "name": "comment.line.double-slash.beast",
+      "match": "//.*$"
+    },
+    "styleBlock": {
+      "name": "meta.style.block.beast",
+      "begin": "^([\\t ]*)(style)\\s*$",
+      "beginCaptures": {
+        "2": { "name": "keyword.other.style.beast" }
+      },
+      "while": "^(?:\\1[\\t ]+|[\\t ]*$)",
+      "contentName": "meta.embedded.block.css",
+      "patterns": [
+        { "include": "source.css" }
+      ]
+    },
+    "typescriptBlock": {
+      "name": "meta.typescript.block.beast",
+      "begin": "^([\\t ]*)(module|setup)\\s*$",
+      "beginCaptures": {
+        "2": { "name": "keyword.declaration.beast" }
+      },
+      "while": "^(?:\\1[\\t ]+|[\\t ]*$)",
+      "contentName": "meta.embedded.block.typescript",
+      "patterns": [
+        { "include": "source.ts" }
+      ]
+    },
+    "typescriptLine": {
+      "name": "meta.typescript.line.beast",
+      "begin": "^([\\t ]*)(import|module|props|setup)\\b",
+      "beginCaptures": {
+        "2": { "name": "keyword.declaration.beast" }
+      },
+      "end": "$",
+      "contentName": "meta.embedded.inline.typescript",
+      "patterns": [
+        { "include": "source.ts" }
+      ]
+    },
+    "componentDeclaration": {
+      "name": "meta.component.declaration.beast",
+      "match": "^([\\t ]*)(component)\\s+([A-Za-z_$][A-Za-z0-9_$]*)",
+      "captures": {
+        "2": { "name": "keyword.declaration.component.beast" },
+        "3": { "name": "entity.name.type.component.beast" }
+      }
+    },
+    "controlFlow": {
+      "patterns": [
+        {
+          "name": "meta.control.each.beast",
+          "begin": "\\b(each)\\b",
+          "beginCaptures": {
+            "1": { "name": "keyword.control.loop.beast" }
+          },
+          "end": "$",
+          "patterns": [
+            { "name": "keyword.control.loop.beast", "match": "\\b(in|key)\\b" },
+            { "name": "variable.parameter.beast", "match": "\\b[A-Za-z_$][A-Za-z0-9_$]*\\b(?=\\s*(?:,|\\bin\\b))" },
+            { "include": "source.ts" }
+          ]
+        },
+        {
+          "name": "keyword.control.beast",
+          "match": "\\b(if|elseif|else|empty|switch|case|default|try|pending|catch)\\b"
+        }
+      ]
+    },
+    "pipeText": {
+      "name": "punctuation.definition.string.begin.beast",
+      "match": "^[\\t ]*\\|"
+    },
+    "interpolation": {
+      "name": "meta.interpolation.beast",
+      "begin": "#\\{",
+      "beginCaptures": {
+        "0": { "name": "punctuation.section.embedded.begin.beast" }
+      },
+      "end": "\\}",
+      "endCaptures": {
+        "0": { "name": "punctuation.section.embedded.end.beast" }
+      },
+      "contentName": "meta.embedded.inline.typescript",
+      "patterns": [
+        { "include": "#balancedBraces" },
+        { "include": "source.ts" }
+      ]
+    },
+    "balancedBraces": {
+      "begin": "\\{",
+      "end": "\\}",
+      "patterns": [
+        { "include": "#balancedBraces" },
+        { "include": "source.ts" }
+      ]
+    },
+    "selector": {
+      "patterns": [
+        {
+          "name": "entity.name.type.component.beast",
+          "match": "(?x)(?:^[\\t ]*|(?<=\\s))[A-Z][A-Za-z0-9_$]*(?:\\.[A-Z][A-Za-z0-9_$]*)*(?=[.#(\\s]|$)"
+        },
+        {
+          "name": "entity.name.tag.beast",
+          "match": "(?x)(?:^[\\t ]*|(?<=\\s))[a-z][a-z0-9-]*(?=[.#(\\s]|$)"
+        },
+        {
+          "name": "entity.other.attribute-name.class.beast",
+          "match": "(?<=\\.)[A-Za-z0-9_-]+"
+        },
+        {
+          "name": "entity.other.attribute-name.id.beast",
+          "match": "(?<=#)[A-Za-z0-9_-]+"
+        },
+        { "name": "punctuation.separator.dot.beast", "match": "\\.(?=[A-Za-z0-9_-])" },
+        { "name": "punctuation.definition.tag.id.beast", "match": "#(?=[A-Za-z0-9_-])" }
+      ]
+    },
+    "attributes": {
+      "patterns": [
+        { "include": "#strings" },
+        { "include": "#attributeExpression" },
+        {
+          "name": "entity.other.attribute-name.beast",
+          "match": "\\b[A-Za-z_$][A-Za-z0-9_$-]*\\b(?=\\s*(?:=|,|\\)))"
+        },
+        { "name": "keyword.operator.assignment.beast", "match": "=" },
+        { "name": "punctuation.section.parens.beast", "match": "[()]" },
+        { "name": "punctuation.separator.comma.beast", "match": "," }
+      ]
+    },
+    "attributeExpression": {
+      "name": "meta.attribute.expression.beast",
+      "begin": "\\{",
+      "beginCaptures": {
+        "0": { "name": "punctuation.section.embedded.begin.beast" }
+      },
+      "end": "\\}",
+      "endCaptures": {
+        "0": { "name": "punctuation.section.embedded.end.beast" }
+      },
+      "contentName": "meta.embedded.inline.typescript",
+      "patterns": [
+        { "include": "#balancedBraces" },
+        { "include": "source.ts" }
+      ]
+    },
+    "strings": {
+      "patterns": [
+        {
+          "name": "string.quoted.double.beast",
+          "begin": "\"",
+          "end": "\"",
+          "patterns": [
+            { "name": "constant.character.escape.beast", "match": "\\\\." }
+          ]
+        },
+        {
+          "name": "string.quoted.single.beast",
+          "begin": "'",
+          "end": "'",
+          "patterns": [
+            { "name": "constant.character.escape.beast", "match": "\\\\." }
+          ]
+        }
+      ]
+    }
+  }
+}
