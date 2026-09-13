@@ -3,7 +3,7 @@ use std::{env, fs};
 use zed_extension_api::{self as zed, LanguageServerId, Worktree};
 
 const SERVER_PACKAGE: &str = "beast-language-server";
-const SERVER_VERSION: &str = "0.2.0";
+const SERVER_VERSION: &str = "0.2.1";
 const SERVER_SCRIPT: &str = "node_modules/beast-language-server/dist/server.js";
 
 struct BeastExtension {
