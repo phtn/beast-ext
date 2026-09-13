@@ -21,3 +21,7 @@ tree-sitter.json
 package-lock.json
 tsconfig.json
 *.vsix
+.claude/**
+CLAUDE.md
+RELEASE-REPORT-*.md
+**/.DS_Store
