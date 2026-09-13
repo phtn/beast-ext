@@ -116,7 +116,7 @@
     "@types/node": "^24.0.0",
     "@types/vscode": "^1.91.0",
     "@vscode/vsce": "^3.9.2",
-    "beast-language-server": "0.2.0",
+    "beast-language-server": "0.2.1",
     "esbuild": "^0.28.2",
     "tree-sitter-cli": "^0.26.12",
     "typescript": "^7.0.2",
