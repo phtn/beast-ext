@@ -70,17 +70,12 @@ impl zed::Extension for BeastExtension {
             });
         }
 
-        for server_script in [
-            "packages/language-server/dist/server.js",
-            "node_modules/beast-language-server/dist/server.js",
-        ] {
-            if worktree.read_text_file(server_script).is_ok() {
-                return Ok(zed::Command {
-                    command: zed::node_binary_path()?,
-                    args: vec![server_script.to_string(), "--stdio".to_string()],
-                    env: Default::default(),
-                });
-            }
+        if worktree.read_text_file(SERVER_SCRIPT).is_ok() {
+            return Ok(zed::Command {
+                command: zed::node_binary_path()?,
+                args: vec![SERVER_SCRIPT.to_string(), "--stdio".to_string()],
+                env: Default::default(),
+            });
         }
 
         let server_script = env::current_dir()
