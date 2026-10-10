@@ -1,0 +1,37 @@
+{
+  "$schema": "https://raw.githubusercontent.com/ribru17/ts_query_ls/refs/heads/master/schemas/config.json",
+  "parser_install_directories": [
+    "."
+  ],
+  "supported_abi_versions": {
+    "start": 15,
+    "end": 15
+  },
+  "valid_captures": {
+    "folds": {
+      "fold": ""
+    },
+    "highlights": {
+      "attribute": "",
+      "comment": "",
+      "constructor": "",
+      "function": "",
+      "keyword": "",
+      "operator": "",
+      "property": "",
+      "punctuation.bracket": "",
+      "punctuation.delimiter": "",
+      "punctuation.special": "",
+      "string": "",
+      "string.escape": "",
+      "tag": "",
+      "variable.parameter": ""
+    },
+    "indents": {
+      "indent.begin": ""
+    },
+    "injections": {
+      "injection.content": ""
+    }
+  }
+}

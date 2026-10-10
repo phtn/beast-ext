@@ -18,6 +18,10 @@ extension.toml
 extension.wasm
 grammar.js
 tree-sitter.json
+.tsqueryrc.json
+beast.so
+beast.dylib
+beast.dll
 package-lock.json
 tsconfig.json
 *.vsix

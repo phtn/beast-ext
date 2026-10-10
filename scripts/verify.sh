@@ -27,7 +27,7 @@ for query_file in languages/beast/*.scm; do
     test/fixtures/continuation.btsx
 done
 
-cc -std=c11 -Wall -Wextra -Wpedantic -Werror -Isrc \
+cc -std=c99 -Wall -Wextra -Wpedantic -Werror -Isrc \
   -fsyntax-only src/parser.c src/scanner.c
 
 git diff --check

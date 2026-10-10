@@ -1,5 +1,4 @@
-; Beast folds — Zed uses these to decide foldable ranges
-
+; Beast foldable ranges.
 [
   (block)
   (component_block)

@@ -29,7 +29,7 @@ npm test
 npm run package:vsix
 ```
 
-Install the generated `beast-<version>.vsix` with **Extensions: Install from
+Install the generated `beastjs-<version>.vsix` with **Extensions: Install from
 VSIX...**, or open this repository in VS Code and press `F5` to launch an
 Extension Development Host.
 
@@ -63,6 +63,27 @@ For a release smoke test, use a project with Beast/Octane `0.12.1`. Confirm
 syntax highlighting, a mapped compiler error, TypeScript member completion,
 and go-to-definition. Check **zed: open log** for installation or server-start
 errors.
+
+## Neovim development
+
+The grammar is shared with Zed. Neovim reference queries live in
+`queries/beast`; they use Neovim captures and combined TypeScript/CSS
+injection ranges. CI tests the generated parser on Linux, macOS, and Windows
+and validates these queries with `ts_query_ls`.
+
+Build and validate the reference queries locally:
+
+```sh
+npx tree-sitter build -o beast.so
+ts_query_ls check -f queries/beast
+```
+
+Until `.btsx` detection is included in Neovim, register the filetype in your
+configuration:
+
+```lua
+vim.filetype.add({ extension = { btsx = "beast" } })
+```
 
 ## Grammar development
 
@@ -117,6 +138,18 @@ release:
 
 The extension repository and grammar URL must remain publicly accessible over
 HTTPS, and the pinned grammar revision must remain reachable.
+
+## Publishing for nvim-treesitter
+
+No npm package is needed: `nvim-treesitter` downloads this repository at a
+pinned commit and builds the C parser. Update its Beast parser revision, copy
+the reference queries to `runtime/queries/beast`, regenerate its supported
+language list, and test installation both with the checked-in parser and
+with parser generation enabled.
+
+Before submitting upstream, follow its [contribution requirements](https://github.com/nvim-treesitter/nvim-treesitter/blob/main/CONTRIBUTING.md),
+including Neovim core filetype detection. Changes to core filetype detection
+go to Vim first, then are ported to Neovim.
 
 ## Support
 

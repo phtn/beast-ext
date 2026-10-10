@@ -6,6 +6,9 @@ node_modules/
 /target/
 /extension.wasm
 /dist/
+/beast.so
+/beast.dylib
+/beast.dll
 /*.vsix
 grammars/beast/
 

@@ -12,6 +12,39 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  parser:
+    name: Tree-sitter parser (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: tree-sitter/setup-action/cli@v2
+        with:
+          tree-sitter-ref: v0.26.12
+      - uses: tree-sitter/parser-test-action@v3
+        with:
+          abi-version: 15
+
+  queries:
+    name: Neovim reference queries
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: tree-sitter/setup-action/cli@v2
+        with:
+          tree-sitter-ref: v0.26.12
+      - name: Build parser
+        run: tree-sitter build -o beast.so
+      - name: Install ts_query_ls
+        run: |
+          mkdir -p "$RUNNER_TEMP/ts-query-ls"
+          curl -fL https://github.com/ribru17/ts_query_ls/releases/download/v3.16.0/ts_query_ls-x86_64-unknown-linux-gnu.tar.gz | tar -xz -C "$RUNNER_TEMP/ts-query-ls"
+      - name: Validate reference queries
+        run: '"$RUNNER_TEMP/ts-query-ls/ts_query_ls" check -f queries/beast'
+
   test:
     runs-on: ubuntu-latest
     steps:
