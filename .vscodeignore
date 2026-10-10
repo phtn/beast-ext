@@ -22,6 +22,9 @@ tree-sitter.json
 beast.so
 beast.dylib
 beast.dll
+parser.so
+parser.dylib
+parser.dll
 package-lock.json
 tsconfig.json
 *.vsix

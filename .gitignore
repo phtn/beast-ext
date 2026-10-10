@@ -9,6 +9,9 @@ node_modules/
 /beast.so
 /beast.dylib
 /beast.dll
+/parser.so
+/parser.dylib
+/parser.dll
 /*.vsix
 grammars/beast/
 
