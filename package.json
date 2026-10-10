@@ -1,7 +1,7 @@
 {
   "name": "beastjs",
   "displayName": "BeastJS",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Language support for Beast (.btsx), the indentation-first component language for Octane TSRX.",
   "publisher": "phtn",
   "author": {
@@ -116,7 +116,7 @@
     "@types/node": "^24.0.0",
     "@types/vscode": "^1.91.0",
     "@vscode/vsce": "^3.9.2",
-    "beast-language-server": "0.2.1",
+    "beast-language-server": "0.2.2",
     "esbuild": "^0.28.2",
     "tree-sitter-cli": "^0.26.12",
     "typescript": "^7.0.2",

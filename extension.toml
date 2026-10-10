@@ -1,6 +1,6 @@
 id = "beast"
 name = "Beast"
-version = "0.3.1"
+version = "0.3.2"
 authors = ["phtn"]
 description = "Syntax highlighting for Beast (.btsx) — indentation-first Octane TSRX"
 homepage = "https://github.com/phtn/beast-ext"

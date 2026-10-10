@@ -55,8 +55,14 @@ cargo check
 ```
 
 The Zed extension prefers `beast-language-server` from the worktree
-environment. Otherwise, it installs the version pinned in `src/lib.rs`
-through Zed's npm runtime.
+environment. Otherwise, it installs `beast-language-server@0.2.2`, pinned in
+`src/lib.rs`, through Zed's npm runtime. This server uses Beast/Octane `0.12.1`
+and includes the required `@tsrx/oxc@0.20.0` Node compiler parser.
+
+For a release smoke test, use a project with Beast/Octane `0.12.1`. Confirm
+syntax highlighting, a mapped compiler error, TypeScript member completion,
+and go-to-definition. Check **zed: open log** for installation or server-start
+errors.
 
 ## Grammar development
 

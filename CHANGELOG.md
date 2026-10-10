@@ -2,6 +2,12 @@
 
 All notable changes to the Beast editor extension are documented here.
 
+## 0.3.2 - 2026-10-10
+
+- Use `beast-language-server@0.2.2` with the Beast/Octane `0.12.1` toolchain.
+- Include the explicit Node compiler parser and suppress generated helper names
+  in TypeScript completion suggestions.
+
 ## 0.3.1
 
 - Update to `beast-language-server@0.2.1` in VS Code and Zed.
